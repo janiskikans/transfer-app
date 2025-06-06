@@ -22,7 +22,7 @@ class AccountController extends AbstractController
     public function listClientAccounts(
         string $clientId,
         ClientRepositoryInterface $clientRepository,
-        AccountRepositoryInterface $accountRepository
+        AccountRepositoryInterface $accountRepository,
     ): JsonResponse {
         $client = $clientRepository->getById($clientId);
         if (!$client) {

@@ -19,12 +19,14 @@ final class AccountFactory extends PersistentProxyObjectFactory
 
     protected function defaults(): array|callable
     {
+        $now = new \DateTimeImmutable();
+
         return [
             'id' => Uuid::v6(),
             'balance' => random_int(100, 10000),
-            'createdAt' => \DateTimeImmutable::createFromMutable(self::faker()->dateTime()),
+            'createdAt' => $now,
+            'updatedAt' => $now,
             'currency' => CurrencyFactory::new(),
-            'updatedAt' => \DateTimeImmutable::createFromMutable(self::faker()->dateTime()),
         ];
     }
 

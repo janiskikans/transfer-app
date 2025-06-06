@@ -18,9 +18,13 @@ final class ClientFactory extends PersistentProxyObjectFactory
 
     protected function defaults(): array | callable
     {
+        $now = new \DateTimeImmutable();
+
         return [
             'id' => Uuid::v6(),
             'email' => self::faker()->email(),
+            'createdAt' => $now,
+            'updatedAt' => $now,
         ];
     }
 

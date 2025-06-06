@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Account\Entity;
 
 use App\Account\Exceptions\AccountAddClientFailedException;
-use App\Currency\Entity\Currency;
 use App\Client\Entity\Client;
+use App\Currency\Entity\Currency;
 use DateTimeImmutable;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\CustomIdGenerator;
@@ -19,6 +19,7 @@ use Doctrine\ORM\Mapping\Table;
 use Gedmo\Mapping\Annotation\Timestampable;
 use Symfony\Bridge\Doctrine\IdGenerator\UuidGenerator;
 use Symfony\Bridge\Doctrine\Types\UuidType;
+use Symfony\Component\Serializer\Attribute\Ignore;
 use Symfony\Component\Uid\Uuid;
 
 #[Entity]
@@ -47,32 +48,44 @@ class Account
     ) {
     }
 
-    public function id(): Uuid
+    public function getId(): Uuid
     {
         return $this->id;
     }
 
-    public function client(): Client
+    #[Ignore]
+    public function getClient(): Client
     {
         return $this->client;
     }
 
-    public function currency(): Currency
+    public function getClientId(): Uuid
+    {
+        return $this->client->getId();
+    }
+
+    #[Ignore]
+    public function getCurrency(): Currency
     {
         return $this->currency;
     }
 
-    public function balance(): int
+    public function getCurrencyCode(): string
+    {
+        return $this->currency->code();
+    }
+
+    public function getBalance(): int
     {
         return $this->balance;
     }
 
-    public function createdAt(): DateTimeImmutable
+    public function getCreatedAt(): DateTimeImmutable
     {
         return $this->createdAt;
     }
 
-    public function updatedAt(): DateTimeImmutable
+    public function getUpdatedAt(): DateTimeImmutable
     {
         return $this->updatedAt;
     }
