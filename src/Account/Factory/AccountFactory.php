@@ -1,0 +1,40 @@
+<?php
+
+namespace App\Account\Factory;
+
+use App\Account\Entity\Account;
+use App\Currency\Factory\CurrencyFactory;
+use Symfony\Component\Uid\Uuid;
+use Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory;
+
+/**
+ * @extends PersistentProxyObjectFactory<Account>
+ */
+final class AccountFactory extends PersistentProxyObjectFactory
+{
+    public static function class(): string
+    {
+        return Account::class;
+    }
+
+    protected function defaults(): array|callable
+    {
+        return [
+            'id' => Uuid::v6(),
+            'balance' => random_int(100, 10000),
+            'createdAt' => \DateTimeImmutable::createFromMutable(self::faker()->dateTime()),
+            'currency' => CurrencyFactory::new(),
+            'updatedAt' => \DateTimeImmutable::createFromMutable(self::faker()->dateTime()),
+        ];
+    }
+
+    /**
+     * @see https://symfony.com/bundles/ZenstruckFoundryBundle/current/index.html#initialization
+     */
+    protected function initialize(): static
+    {
+        return $this
+            // ->afterInstantiate(function(Account $account): void {})
+        ;
+    }
+}

@@ -1,0 +1,4 @@
+### Get client accounts
+GET http://{{host}}/api/v1/client/1f04314b-4066-69ce-8054-df902916c2c2/accounts
+Accept: application/json
+###

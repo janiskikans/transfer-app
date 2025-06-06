@@ -1,5 +1,4 @@
-controllers:
-    resource:
-        path: ../src/Controller/
-        namespace: App\Controller
+account_v1:
+    resource: ../src/Account/Controller/V1/
     type: attribute
+    prefix: /api/v1
