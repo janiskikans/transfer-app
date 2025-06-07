@@ -32,6 +32,13 @@ readonly class TransferValidationService
             throw new InvalidTransferRequestException('Sender and recipient cannot be the same.');
         }
 
+        $isValidRequestCurrency = $request->getCurrency() === $request->getSender()->getCurrency()->toEnum()
+            || $request->getCurrency() === $request->getRecipient()->getCurrency()->toEnum();
+
+        if (!$isValidRequestCurrency) {
+            throw new InvalidTransferRequestException('Invalid currency.');
+        }
+
         $this->validateSenderBalance($request);
     }
 

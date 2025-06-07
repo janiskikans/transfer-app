@@ -46,6 +46,18 @@ class TransferValidationServiceTest extends TestCase
     /**
      * @throws InvalidTransferRequestException|CurrencyRateNotFoundException
      */
+    public function testValidateTransferRequest_withInvalidCurrency_throwsException(): void
+    {
+        $request = $this->createTransferRequest(AccountFactory::create(), AccountFactory::create(), 100, Currency::ANG);
+
+        self::expectExceptionObject(new InvalidTransferRequestException('Invalid currency.'));
+
+        $this->sut->validateTransferRequest($request);
+    }
+
+    /**
+     * @throws InvalidTransferRequestException|CurrencyRateNotFoundException
+     */
     public function testValidateTransferRequest_withSameAccount_throwsException(): void
     {
         $account = AccountFactory::create();
