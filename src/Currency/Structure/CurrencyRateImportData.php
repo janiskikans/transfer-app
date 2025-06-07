@@ -6,6 +6,7 @@ namespace App\Currency\Structure;
 
 use App\Currency\Enum\Currency;
 
+// TODO: Dto
 readonly class CurrencyRateImportData
 {
     public function __construct(

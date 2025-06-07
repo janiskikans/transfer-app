@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Account\Entity;
 
 use App\Account\Exceptions\AccountAddClientFailedException;
+use App\Account\Exceptions\InsufficientBalanceException;
 use App\Client\Entity\Client;
 use App\Currency\Entity\Currency;
 use App\Transaction\Entity\Transaction;
@@ -50,22 +51,22 @@ class Account
         #[GeneratedValue(strategy: 'CUSTOM')]
         #[CustomIdGenerator(class: UuidGenerator::class)]
         #[Groups(['api'])]
-        private Uuid $id,
+        private ?Uuid $id = null,
         #[ManyToOne(targetEntity: Client::class, inversedBy: 'accounts')]
-        private Client $client,
+        private ?Client $client = null,
         #[ManyToOne(targetEntity: Currency::class)]
         #[JoinColumn(name: 'currency', referencedColumnName: 'code', nullable: false)]
-        private Currency $currency,
+        private ?Currency $currency = null,
         #[Column(type: 'integer')]
-        private int $balance,
+        private ?int $balance = null,
         #[Column(type: 'datetime_immutable')]
         #[Timestampable(on: 'create')]
         #[Groups(['api'])]
-        private readonly DateTimeImmutable $createdAt,
+        private readonly ?DateTimeImmutable $createdAt = null,
         #[Column(type: 'datetime_immutable')]
         #[Timestampable(on: 'update')]
         #[Groups(['api'])]
-        private readonly DateTimeImmutable $updatedAt,
+        private ?DateTimeImmutable $updatedAt = null,
     ) {
     }
 
@@ -126,5 +127,26 @@ class Account
         }
 
         $this->client = $client;
+    }
+
+    /**
+     * @throws InsufficientBalanceException
+     */
+    public function debit(int $amount): self
+    {
+        if ($this->balance < $amount) {
+            throw new InsufficientBalanceException();
+        }
+
+        $this->balance -= $amount;
+
+        return $this;
+    }
+
+    public function credit(int $amount): self
+    {
+        $this->balance += $amount;
+
+        return $this;
     }
 }
