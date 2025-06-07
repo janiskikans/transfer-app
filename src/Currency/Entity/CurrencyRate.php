@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Currency\Entity;
 
+use App\Currency\Enum\CurrencyRateSource;
 use DateTimeImmutable;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
@@ -23,6 +24,8 @@ class CurrencyRate
         #[GeneratedValue]
         #[Column]
         private int $id,
+        #[Column(type: 'string', length: 50, enumType: CurrencyRateSource::class)]
+        private CurrencyRateSource $source,
         #[ManyToOne(targetEntity: Currency::class)]
         #[JoinColumn(name: 'currency', referencedColumnName: 'code', nullable: false)]
         private Currency $baseCurrency,
@@ -32,9 +35,6 @@ class CurrencyRate
         #[Column(type: 'decimal', precision: 12, scale: 5)]
         private float $rate,
         #[Column(type: 'datetime_immutable')]
-        #[Timestampable(on: 'create')]
-        private readonly DateTimeImmutable $createdAt,
-        #[Column(type: 'datetime_immutable')]
         #[Timestampable(on: 'update')]
         private readonly DateTimeImmutable $updatedAt,
     ) {
@@ -43,6 +43,11 @@ class CurrencyRate
     public function getId(): int
     {
         return $this->id;
+    }
+
+    public function getSource(): CurrencyRateSource
+    {
+        return $this->source;
     }
 
     public function getBaseCurrency(): Currency
@@ -58,11 +63,6 @@ class CurrencyRate
     public function getRate(): float
     {
         return $this->rate;
-    }
-
-    public function getCreatedAt(): DateTimeImmutable
-    {
-        return $this->createdAt;
     }
 
     public function getUpdatedAt(): DateTimeImmutable
