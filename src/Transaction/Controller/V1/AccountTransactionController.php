@@ -33,7 +33,7 @@ class AccountTransactionController extends AbstractController
         TransactionRepositoryInterface $transactionRepository,
         TransactionDtoFactory $transactionDtoFactory,
         SerializerInterface $serializer,
-        LoggerInterface $logger
+        LoggerInterface $logger,
     ): JsonResponse {
         $account = $accountRepository->getById($accountId);
         if (!$account) {

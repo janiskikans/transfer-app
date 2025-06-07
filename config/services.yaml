@@ -23,3 +23,8 @@ services:
     # please note that last definitions always *replace* previous ones
 
     App\Currency\Interface\CurrencyRateImporterInterface: '@App\Currency\Service\FakeCurrencyRateImporter'
+    App\Currency\Repository\CurrencyRateRepositoryInterface: '@App\Currency\Repository\CachedCurrencyRateRepository'
+
+    App\Currency\Repository\CachedCurrencyRateRepository:
+        arguments:
+            $innerRepository: '@App\Currency\Repository\Doctrine\CurrencyRateRepository'
