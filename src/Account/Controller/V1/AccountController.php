@@ -6,10 +6,14 @@ namespace App\Account\Controller\V1;
 
 use App\Account\Repositories\AccountRepositoryInterface;
 use App\Client\Repositories\ClientRepositoryInterface;
+use Psr\Log\LoggerInterface;
+use RuntimeException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Routing\Requirement\Requirement;
+use Symfony\Component\Serializer\SerializerInterface;
+use Throwable;
 
 class AccountController extends AbstractController
 {
@@ -23,6 +27,8 @@ class AccountController extends AbstractController
         string $clientId,
         ClientRepositoryInterface $clientRepository,
         AccountRepositoryInterface $accountRepository,
+        SerializerInterface $serializer,
+        LoggerInterface $logger
     ): JsonResponse {
         $client = $clientRepository->getById($clientId);
         if (!$client) {
@@ -31,6 +37,14 @@ class AccountController extends AbstractController
 
         $accounts = $accountRepository->getByClientId($clientId);
 
-        return $this->json($accounts);
+        try {
+            $json = $serializer->serialize($accounts, 'json', ['groups' => 'api']);
+        } catch (Throwable $e) {
+            $logger->error($e);
+
+            throw new RuntimeException('Failed to get accounts.');
+        }
+
+        return JsonResponse::fromJsonString($json);
     }
 }

@@ -19,7 +19,8 @@ use Doctrine\ORM\Mapping\Table;
 use Gedmo\Mapping\Annotation\Timestampable;
 use Symfony\Bridge\Doctrine\IdGenerator\UuidGenerator;
 use Symfony\Bridge\Doctrine\Types\UuidType;
-use Symfony\Component\Serializer\Attribute\Ignore;
+use Symfony\Component\Serializer\Attribute\Groups;
+use Symfony\Component\Serializer\Attribute\SerializedName;
 use Symfony\Component\Uid\Uuid;
 
 #[Entity]
@@ -31,6 +32,7 @@ class Account
         #[Column(type: UuidType::NAME, unique: true)]
         #[GeneratedValue(strategy: 'CUSTOM')]
         #[CustomIdGenerator(class: UuidGenerator::class)]
+        #[Groups(['api'])]
         private Uuid $id,
         #[ManyToOne(targetEntity: Client::class, inversedBy: 'accounts')]
         private Client $client,
@@ -41,9 +43,11 @@ class Account
         private int $balance,
         #[Column(type: 'datetime_immutable')]
         #[Timestampable(on: 'create')]
+        #[Groups(['api'])]
         private readonly DateTimeImmutable $createdAt,
         #[Column(type: 'datetime_immutable')]
         #[Timestampable(on: 'update')]
+        #[Groups(['api'])]
         private readonly DateTimeImmutable $updatedAt,
     ) {
     }
@@ -53,7 +57,6 @@ class Account
         return $this->id;
     }
 
-    #[Ignore]
     public function getClient(): Client
     {
         return $this->client;
@@ -64,20 +67,28 @@ class Account
         return $this->client->getId();
     }
 
-    #[Ignore]
     public function getCurrency(): Currency
     {
         return $this->currency;
     }
 
+    #[Groups(['api'])]
+    #[SerializedName('currency')]
     public function getCurrencyCode(): string
     {
-        return $this->currency->code();
+        return $this->currency->getCode();
     }
 
     public function getBalance(): int
     {
         return $this->balance;
+    }
+
+    #[Groups(['api'])]
+    #[SerializedName('balance')]
+    public function getBalanceAsFloat(): float
+    {
+        return $this->balance / (10 ** $this->currency->getDecimalPlaces());
     }
 
     public function getCreatedAt(): DateTimeImmutable

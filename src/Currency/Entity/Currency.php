@@ -24,17 +24,17 @@ class Currency
     ) {
     }
 
-    public function code(): string
+    public function getCode(): string
     {
         return $this->code;
     }
 
-    public function name(): string
+    public function getName(): string
     {
         return $this->name;
     }
 
-    public function decimalPlaces(): int
+    public function getDecimalPlaces(): int
     {
         return $this->decimalPlaces;
     }
