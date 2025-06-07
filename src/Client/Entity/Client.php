@@ -13,6 +13,7 @@ use Doctrine\ORM\Mapping\CustomIdGenerator;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\Index;
 use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\Mapping\Table;
 use Gedmo\Mapping\Annotation\Timestampable;
@@ -22,6 +23,7 @@ use Symfony\Component\Uid\Uuid;
 
 #[Entity]
 #[Table(name: 'client')]
+#[Index(name: 'client_created_at_idx', columns: ['created_at'])]
 class Client
 {
     /** @var Collection<array-key, Account> */

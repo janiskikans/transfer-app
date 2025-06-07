@@ -16,6 +16,7 @@ use Doctrine\ORM\Mapping\CustomIdGenerator;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\Index;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\OneToMany;
@@ -29,6 +30,9 @@ use Symfony\Component\Uid\Uuid;
 
 #[Entity]
 #[Table(name: 'account')]
+#[Index(name: 'account_client_id_idx', columns: ['client_id'])]
+#[Index(name: 'account_currency_idx', columns: ['currency'])]
+#[Index(name: 'account_created_at_idx', columns: ['created_at'])]
 class Account
 {
     /** @var Collection<array-key, Transaction> */
