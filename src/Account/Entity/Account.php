@@ -7,7 +7,9 @@ namespace App\Account\Entity;
 use App\Account\Exceptions\AccountAddClientFailedException;
 use App\Client\Entity\Client;
 use App\Currency\Entity\Currency;
+use App\Transaction\Entity\Transaction;
 use DateTimeImmutable;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\CustomIdGenerator;
 use Doctrine\ORM\Mapping\Entity;
@@ -15,6 +17,7 @@ use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\ManyToOne;
+use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\Mapping\Table;
 use Gedmo\Mapping\Annotation\Timestampable;
 use Symfony\Bridge\Doctrine\IdGenerator\UuidGenerator;
@@ -27,6 +30,20 @@ use Symfony\Component\Uid\Uuid;
 #[Table(name: 'account')]
 class Account
 {
+    /** @var Collection<array-key, Transaction> */
+    #[OneToMany(targetEntity: Transaction::class, mappedBy: 'sender', cascade: [
+        'persist',
+        'remove'
+    ], orphanRemoval: true)]
+    private Collection $receivedTransactions;
+
+    /** @var Collection<array-key, Transaction> */
+    #[OneToMany(targetEntity: Transaction::class, mappedBy: 'recipient', cascade: [
+        'persist',
+        'remove'
+    ], orphanRemoval: true)]
+    private Collection $sentTransactions;
+
     public function __construct(
         #[Id]
         #[Column(type: UuidType::NAME, unique: true)]
@@ -88,6 +105,7 @@ class Account
     #[SerializedName('balance')]
     public function getBalanceAsFloat(): float
     {
+        // TODO: Helper?
         return $this->balance / (10 ** $this->currency->getDecimalPlaces());
     }
 
