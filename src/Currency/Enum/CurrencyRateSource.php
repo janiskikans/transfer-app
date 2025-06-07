@@ -7,4 +7,5 @@ namespace App\Currency\Enum;
 enum CurrencyRateSource: string
 {
     case EXCHANGE_RATE_HOST = 'ERH';
+    case FAKE = 'FKE';
 }

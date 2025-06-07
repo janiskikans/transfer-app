@@ -12,9 +12,9 @@ interface CurrencyRateImporterInterface
     public function getSource(): CurrencyRateSource;
 
     /**
-     * @param Currency[] $currencies
+     * @param Currency[]|null $currencies
      * @return CurrencyRateImportData[]
      * @throws CurrencyRateImporterException
      */
-    public function importRates(Currency $source, array $currencies): array;
+    public function importRates(Currency $source, ?array $currencies = null): array;
 }

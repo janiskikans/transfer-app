@@ -4,21 +4,23 @@ declare(strict_types=1);
 
 namespace App\Currency\Structure;
 
+use App\Currency\Enum\Currency;
+
 readonly class CurrencyRateImportData
 {
     public function __construct(
-        private string $baseCurrency,
-        private string $targetCurrency,
+        private Currency $baseCurrency,
+        private Currency $targetCurrency,
         private float $rate,
     ) {
     }
 
-    public function getBaseCurrency(): string
+    public function getBaseCurrency(): Currency
     {
         return $this->baseCurrency;
     }
 
-    public function getTargetCurrency(): string
+    public function getTargetCurrency(): Currency
     {
         return $this->targetCurrency;
     }

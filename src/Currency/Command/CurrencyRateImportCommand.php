@@ -10,6 +10,7 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use Throwable;
 
 #[AsCommand(
     name: 'currency:import-rates',
@@ -17,8 +18,9 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 )]
 class CurrencyRateImportCommand extends Command
 {
-    public function __construct(private readonly CurrencyRateImportService $rateImportService, private string $exchangeRateHostAccessKey)
-    {
+    public function __construct(
+        private readonly CurrencyRateImportService $rateImportService,
+    ) {
         parent::__construct();
     }
 
@@ -28,9 +30,21 @@ class CurrencyRateImportCommand extends Command
 
         $io->info('Importing currency rates...');
 
-        $this->rateImportService->importAndSaveRates();
+        try {
+            $result = $this->rateImportService->importAndSaveRates();
+        } catch (Throwable $e) {
+            $io->error('Failed to import currency rates: ' . $e->getMessage());
 
-        $io->success('Currency rates imported successfully!');;
+            return Command::FAILURE;
+        }
+
+        $io->success(
+            sprintf(
+                'Imported %d new and %d updated currency rates.',
+                $result->getNewCount(),
+                $result->getUpdatedCount()
+            )
+        );;
 
         return Command::SUCCESS;
     }

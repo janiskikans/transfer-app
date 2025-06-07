@@ -27,30 +27,28 @@ readonly class ExchangeRateHostCurrencyRateImporter implements CurrencyRateImpor
     }
 
     /**
-     * @param Currency[] $currencies $currencies
+     * @param Currency[]|null $currencies $currencies
      * @return CurrencyRateImportData[]
      */
-    public function importRates(Currency $source, array $currencies): array
+    public function importRates(Currency $source, ?array $currencies = null): array
     {
-        if (!$currencies) {
-            return [];
-        }
-
         try {
-            $currencies = array_map(fn(Currency $currency) => $currency->value, $currencies);
+            $query = [
+                'access_key' => $this->exchangeRateHostAccessKey,
+                'source' => $source->value,
+                'date' => new DateTimeImmutable()->format('Y-m-d'),
+            ];
+
+            if ($currencies) {
+                $currencies = array_map(fn(Currency $currency) => $currency->value, $currencies);
+                $query['currencies'] = implode(',', $currencies);
+            }
 
             $response = $this->client->request('GET', self::BASE_URL . '/historical', [
-                'query' => [
-                    'access_key' => $this->exchangeRateHostAccessKey,
-                    'source' => $source->value,
-                    'currencies' => implode(',', $currencies),
-                    'date' => new DateTimeImmutable()->format('Y-m-d'),
-                ]
+                'query' => $query
             ]);
 
             $data = $response->toArray();
-
-            dump($data);
 
             if (!isset($data['success']) || $data['success'] === false) {
                 throw new CurrencyRateImporterException('Request was not successful.');
@@ -64,8 +62,8 @@ readonly class ExchangeRateHostCurrencyRateImporter implements CurrencyRateImpor
 
             foreach ($data['quotes'] as $key => $rate) {
                 $rates[] = new CurrencyRateImportData(
-                    substr($key, 3),
-                    substr($key, 3, 3),
+                    Currency::from(substr($key, 0, 3)), // TODO: Better enum handling?
+                    Currency::from(substr($key, 3, 3)),
                     $rate,
                 );
             }

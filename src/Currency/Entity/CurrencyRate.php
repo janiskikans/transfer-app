@@ -23,20 +23,20 @@ class CurrencyRate
         #[Id]
         #[GeneratedValue]
         #[Column]
-        private int $id,
+        private ?int $id = null,
         #[Column(type: 'string', length: 50, enumType: CurrencyRateSource::class)]
-        private CurrencyRateSource $source,
+        private ?CurrencyRateSource $source = null,
         #[ManyToOne(targetEntity: Currency::class)]
-        #[JoinColumn(name: 'currency', referencedColumnName: 'code', nullable: false)]
-        private Currency $baseCurrency,
+        #[JoinColumn(name: 'base_currency', referencedColumnName: 'code', nullable: false)]
+        private ?Currency $baseCurrency = null,
         #[ManyToOne(targetEntity: Currency::class)]
-        #[JoinColumn(name: 'currency', referencedColumnName: 'code', nullable: false)]
-        private Currency $targetCurrency,
+        #[JoinColumn(name: 'target_currency', referencedColumnName: 'code', nullable: false)]
+        private ?Currency $targetCurrency = null,
         #[Column(type: 'decimal', precision: 12, scale: 5)]
-        private float $rate,
+        private ?float $rate = null,
         #[Column(type: 'datetime_immutable')]
         #[Timestampable(on: 'update')]
-        private readonly DateTimeImmutable $updatedAt,
+        private ?DateTimeImmutable $updatedAt = null,
     ) {
     }
 
@@ -63,6 +63,13 @@ class CurrencyRate
     public function getRate(): float
     {
         return $this->rate;
+    }
+
+    public function setRate(float $rate): self
+    {
+        $this->rate = $rate;
+
+        return $this;
     }
 
     public function getUpdatedAt(): DateTimeImmutable
