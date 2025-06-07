@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Currency\Entity;
 
+use App\Currency\Enum\Currency as CurrencyEnum;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\Id;
@@ -37,5 +38,10 @@ class Currency
     public function getDecimalPlaces(): int
     {
         return $this->decimalPlaces;
+    }
+
+    public function toEnum(): CurrencyEnum
+    {
+        return CurrencyEnum::from($this->code);
     }
 }

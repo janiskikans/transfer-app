@@ -8,7 +8,7 @@ use App\Transaction\Enum\TransactionType;
 use DateTimeImmutable;
 use Symfony\Component\Uid\Uuid;
 
-final readonly class TransactionDto
+readonly class TransactionDto
 {
     public function __construct(
         private Uuid $id,

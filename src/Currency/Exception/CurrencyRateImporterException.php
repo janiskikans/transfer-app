@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Currency\Exception;
 
-use RuntimeException;
+use Exception;
 
-class CurrencyRateImporterException extends RuntimeException
+class CurrencyRateImporterException extends Exception
 {
 
 }
