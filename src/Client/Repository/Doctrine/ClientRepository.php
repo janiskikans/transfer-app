@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Client\Repositories\Doctrine;
+namespace App\Client\Repository\Doctrine;
 
 use App\Client\Entity\Client;
-use App\Client\Repositories\ClientRepositoryInterface;
+use App\Client\Repository\ClientRepositoryInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
 

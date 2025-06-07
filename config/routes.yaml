@@ -2,3 +2,8 @@ account_v1:
     resource: ../src/Account/Controller/V1/
     type: attribute
     prefix: /api/v1
+
+transaction_v1:
+    resource: ../src/Transaction/Controller/V1/
+    type: attribute
+    prefix: /api/v1

@@ -23,7 +23,7 @@ final class AccountFactory extends PersistentProxyObjectFactory
 
         return [
             'id' => Uuid::v6(),
-            'balance' => random_int(100, 10000),
+            'balance' => 0,
             'createdAt' => $now,
             'updatedAt' => $now,
             'currency' => CurrencyFactory::new(),

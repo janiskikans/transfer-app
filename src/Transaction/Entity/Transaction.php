@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Transaction\Entity;
 
 use App\Account\Entity\Account;
+use App\Currency\Entity\Currency;
 use DateTimeImmutable;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\CustomIdGenerator;
@@ -17,8 +18,6 @@ use Doctrine\ORM\Mapping\Table;
 use Gedmo\Mapping\Annotation\Timestampable;
 use Symfony\Bridge\Doctrine\IdGenerator\UuidGenerator;
 use Symfony\Bridge\Doctrine\Types\UuidType;
-use Symfony\Component\Serializer\Attribute\Groups;
-use Symfony\Component\Serializer\Attribute\SerializedName;
 use Symfony\Component\Uid\Uuid;
 
 #[Entity]
@@ -30,7 +29,6 @@ class Transaction
         #[Column(type: UuidType::NAME, unique: true)]
         #[GeneratedValue(strategy: 'CUSTOM')]
         #[CustomIdGenerator(class: UuidGenerator::class)]
-        #[Groups(['api'])]
         private Uuid $id,
         #[ManyToOne(targetEntity: Account::class, inversedBy: 'sentTransactions')]
         #[JoinColumn(name: 'sender', referencedColumnName: 'id', nullable: false)]
@@ -42,7 +40,6 @@ class Transaction
         private int $amount,
         #[Column(type: 'datetime_immutable')]
         #[Timestampable(on: 'create')]
-        #[Groups(['api'])]
         private readonly DateTimeImmutable $createdAt,
     ) {
     }
@@ -57,7 +54,6 @@ class Transaction
         return $this->sender;
     }
 
-    #[Groups(['api'])]
     public function getSenderId(): Uuid
     {
         return $this->sender->getId();
@@ -68,7 +64,6 @@ class Transaction
         return $this->recipient;
     }
 
-    #[Groups(['api'])]
     public function getRecipientId(): Uuid
     {
         return $this->recipient->getId();
@@ -79,8 +74,11 @@ class Transaction
         return $this->amount;
     }
 
-    #[Groups(['api'])]
-    #[SerializedName('amount')]
+    public function getCurrency(): Currency
+    {
+        return $this->recipient->getCurrency();
+    }
+
     public function getAmountAsFloat(): float
     {
         // TODO: Helper?

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Client\Repositories;
+namespace App\Client\Repository;
 
 use App\Client\Entity\Client;
 

@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Account\Controller\V1;
 
-use App\Account\Repositories\AccountRepositoryInterface;
-use App\Client\Repositories\ClientRepositoryInterface;
+use App\Account\Repository\AccountRepositoryInterface;
+use App\Client\Repository\ClientRepositoryInterface;
 use Psr\Log\LoggerInterface;
 use RuntimeException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -15,15 +15,15 @@ use Symfony\Component\Routing\Requirement\Requirement;
 use Symfony\Component\Serializer\SerializerInterface;
 use Throwable;
 
-class AccountController extends AbstractController
+class ClientAccountController extends AbstractController
 {
     #[Route(
         path: '/client/{clientId}/accounts',
-        name: 'v1_account_list_by_client',
+        name: 'v1_get_client_accounts',
         requirements: ['clientId' => Requirement::UUID],
         methods: ['GET'])
     ]
-    public function listClientAccounts(
+    public function getClientAccounts(
         string $clientId,
         ClientRepositoryInterface $clientRepository,
         AccountRepositoryInterface $accountRepository,
