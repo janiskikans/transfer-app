@@ -23,4 +23,12 @@ final readonly class ClientRepository implements ClientRepositoryInterface
     {
         return $this->repository->findOneBy(['id' => $id]);
     }
+
+    /**
+     * @return Client[]
+     */
+    public function getAll(): array
+    {
+        return $this->repository->findAll();
+    }
 }

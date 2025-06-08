@@ -186,11 +186,11 @@ class AppFixtures extends Fixture
     ];
 
     private const array ACCOUNT_CURRENCIES = [
-        Currency::USD,
-        Currency::EUR,
-        Currency::GBP,
-        Currency::JPY,
-        Currency::ISK,
+        Currency::USD->value => 10_000,
+        Currency::EUR->value => 10_000,
+        Currency::GBP->value => 10_000,
+        Currency::JPY->value => 1_500_000,
+        Currency::ISK->value => 1_300_000,
     ];
 
     public function load(ObjectManager $manager): void
@@ -208,10 +208,11 @@ class AppFixtures extends Fixture
         $clients = ClientFactory::createMany(2);
 
         foreach ($clients as $client) {
-            foreach (self::ACCOUNT_CURRENCIES as $currency) {
+            foreach (self::ACCOUNT_CURRENCIES as $currency => $startingBalance) {
                 $account = AccountFactory::createOne([
                     'client' => $client,
-                    'currency' => $currencies[$currency->value],
+                    'currency' => $currencies[$currency],
+                    'balance' => $startingBalance,
                 ]);
 
                 $client->addAccount($account);

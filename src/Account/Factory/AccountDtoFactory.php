@@ -8,7 +8,7 @@ use App\Account\Dto\AccountDto;
 use App\Account\Entity\Account;
 use App\Shared\Helper\MoneyAmountHelper;
 
-class AccountDtoFactory
+readonly class AccountDtoFactory
 {
     public function createFromEntity(Account $account): AccountDto
     {

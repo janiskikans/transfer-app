@@ -7,3 +7,8 @@ transaction_v1:
     resource: ../src/Transaction/Controller/V1/
     type: attribute
     prefix: /api/v1
+
+client_v1:
+    resource: ../src/Client/Controller/V1/
+    type: attribute
+    prefix: /api/v1
