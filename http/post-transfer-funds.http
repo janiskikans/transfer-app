@@ -1,0 +1,12 @@
+### Transfer funds between accounts
+POST http://{{host}}/api/v1/transfer
+Accept: application/json
+Content-Type: application/json
+
+{
+    "senderId": "1f0446e8-4cb1-623a-8143-f710dc239fa0",
+    "recipientId": "1f0446e8-4ca3-69b4-8743-f710dc239fa0",
+    "amount": 26.50,
+    "currency": "ISK"
+}
+###
