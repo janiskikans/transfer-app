@@ -17,11 +17,11 @@ class Currency
     public function __construct(
         #[Id]
         #[Column(type: 'string', length: 3)]
-        private string $code,
+        private ?string $code = null,
         #[Column(type: 'string', length: 100)]
-        private string $name,
+        private ?string $name = null,
         #[Column(type: 'integer')]
-        private int $decimalPlaces,
+        private ?int $decimalPlaces = null,
     ) {
     }
 

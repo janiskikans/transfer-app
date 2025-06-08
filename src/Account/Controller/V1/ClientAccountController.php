@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Account\Controller\V1;
 
+use App\Account\Entity\Account;
+use App\Account\Factory\AccountDtoFactory;
 use App\Account\Repository\AccountRepositoryInterface;
 use App\Client\Repository\ClientRepositoryInterface;
 use Psr\Log\LoggerInterface;
@@ -28,7 +30,8 @@ class ClientAccountController extends AbstractController
         ClientRepositoryInterface $clientRepository,
         AccountRepositoryInterface $accountRepository,
         SerializerInterface $serializer,
-        LoggerInterface $logger
+        LoggerInterface $logger,
+        AccountDtoFactory $accountDtoFactory,
     ): JsonResponse {
         $client = $clientRepository->getById($clientId);
         if (!$client) {
@@ -38,7 +41,18 @@ class ClientAccountController extends AbstractController
         $accounts = $accountRepository->getByClientId($clientId);
 
         try {
-            $json = $serializer->serialize($accounts, 'json', ['groups' => 'api']);
+            $accountsDto = array_map(
+                fn(Account $account) => $accountDtoFactory->createFromEntity($account),
+                $accounts,
+            );
+
+            $json = $serializer->serialize(
+                [
+                    'count' => count($accountsDto),
+                    'data' => $accountsDto,
+                ],
+                'json'
+            );
         } catch (Throwable $e) {
             $logger->error($e);
 

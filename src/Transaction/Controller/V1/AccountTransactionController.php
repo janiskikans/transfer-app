@@ -47,15 +47,15 @@ class AccountTransactionController extends AbstractController
         );
 
         try {
-            $transactions = array_map(
+            $transactionsDto = array_map(
                 fn(Transaction $transaction) => $transactionDtoFactory->createFromEntity($transaction, $account),
                 $transactions
             );
 
             $json = $serializer->serialize(
                 [
-                    'count' => count($transactions),
-                    'data' => $transactions,
+                    'count' => count($transactionsDto),
+                    'data' => $transactionsDto,
                 ],
                 'json'
             );

@@ -35,15 +35,15 @@ class Client
         #[Column(type: UuidType::NAME, unique: true)]
         #[GeneratedValue(strategy: 'CUSTOM')]
         #[CustomIdGenerator(class: UuidGenerator::class)]
-        private Uuid $id,
+        private ?Uuid $id = null,
         #[Column(type: 'string', length: 180, unique: true)]
-        private readonly string $email,
+        private ?string $email = null,
         #[Column(type: 'datetime_immutable')]
         #[Timestampable(on: 'create')]
-        private readonly DateTimeImmutable $createdAt,
+        private ?DateTimeImmutable $createdAt = null,
         #[Column(type: 'datetime_immutable')]
         #[Timestampable(on: 'update')]
-        private readonly DateTimeImmutable $updatedAt,
+        private ?DateTimeImmutable $updatedAt = null,
     ) {
         $this->accounts = new ArrayCollection();
     }

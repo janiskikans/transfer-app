@@ -8,9 +8,7 @@ use App\Account\Exceptions\AccountAddClientFailedException;
 use App\Account\Exceptions\InsufficientBalanceException;
 use App\Client\Entity\Client;
 use App\Currency\Entity\Currency;
-use App\Transaction\Entity\Transaction;
 use DateTimeImmutable;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\CustomIdGenerator;
 use Doctrine\ORM\Mapping\Entity;
@@ -19,13 +17,10 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\Index;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\ManyToOne;
-use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\Mapping\Table;
 use Gedmo\Mapping\Annotation\Timestampable;
 use Symfony\Bridge\Doctrine\IdGenerator\UuidGenerator;
 use Symfony\Bridge\Doctrine\Types\UuidType;
-use Symfony\Component\Serializer\Attribute\Groups;
-use Symfony\Component\Serializer\Attribute\SerializedName;
 use Symfony\Component\Uid\Uuid;
 
 #[Entity]
@@ -35,26 +30,11 @@ use Symfony\Component\Uid\Uuid;
 #[Index(name: 'account_created_at_idx', columns: ['created_at'])]
 class Account
 {
-    /** @var Collection<array-key, Transaction> */
-    #[OneToMany(targetEntity: Transaction::class, mappedBy: 'sender', cascade: [
-        'persist',
-        'remove'
-    ], orphanRemoval: true)]
-    private Collection $receivedTransactions;
-
-    /** @var Collection<array-key, Transaction> */
-    #[OneToMany(targetEntity: Transaction::class, mappedBy: 'recipient', cascade: [
-        'persist',
-        'remove'
-    ], orphanRemoval: true)]
-    private Collection $sentTransactions;
-
     public function __construct(
         #[Id]
         #[Column(type: UuidType::NAME, unique: true)]
         #[GeneratedValue(strategy: 'CUSTOM')]
         #[CustomIdGenerator(class: UuidGenerator::class)]
-        #[Groups(['api'])]
         private ?Uuid $id = null,
         #[ManyToOne(targetEntity: Client::class, inversedBy: 'accounts')]
         private ?Client $client = null,
@@ -65,11 +45,9 @@ class Account
         private ?int $balance = null,
         #[Column(type: 'datetime_immutable')]
         #[Timestampable(on: 'create')]
-        #[Groups(['api'])]
         private readonly ?DateTimeImmutable $createdAt = null,
         #[Column(type: 'datetime_immutable')]
         #[Timestampable(on: 'update')]
-        #[Groups(['api'])]
         private ?DateTimeImmutable $updatedAt = null,
     ) {
     }
@@ -94,24 +72,9 @@ class Account
         return $this->currency;
     }
 
-    #[Groups(['api'])]
-    #[SerializedName('currency')]
-    public function getCurrencyCode(): string
-    {
-        return $this->currency->getCode();
-    }
-
     public function getBalance(): int
     {
         return $this->balance;
-    }
-
-    #[Groups(['api'])]
-    #[SerializedName('balance')]
-    public function getBalanceAsFloat(): float
-    {
-        // TODO: Helper?
-        return $this->balance / (10 ** $this->currency->getDecimalPlaces());
     }
 
     public function getCreatedAt(): DateTimeImmutable
