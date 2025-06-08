@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Transaction\Service;
 
 use App\Account\Entity\Account;
+use App\Account\Repository\AccountRepositoryInterface;
 use App\Currency\Enum\Currency as CurrencyEnum;
 use App\Currency\Enum\CurrencyRateSource;
 use App\Currency\Exception\CurrencyRateNotFoundException;
@@ -13,8 +14,10 @@ use App\Transaction\Dto\TransferRequestDto;
 use App\Transaction\Exception\InvalidTransferRequestException;
 use App\Transaction\Exception\TransferFailedException;
 use App\Transaction\Factory\TransactionFactory;
+use App\Transaction\Repository\TransactionRepositoryInterface;
+use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Exception;
-use Doctrine\ORM\EntityManagerInterface;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\Lock\LockFactory;
 use Throwable;
 
@@ -23,54 +26,61 @@ readonly class FundTransferService
     public function __construct(
         private TransferValidationService $validationService,
         private CurrencyConversionService $conversionService,
-        private EntityManagerInterface $em, // TODO: Repo?,
+        private AccountRepositoryInterface $accountRepository,
+        private TransactionRepositoryInterface $transactionRepository,
         private TransactionFactory $transactionFactory,
         private LockFactory $lockFactory,
+        private Connection $connection,
         private string $activeRateSource,
+        private LoggerInterface $logger,
     ) {
     }
 
     /**
-     * @throws TransferFailedException|InvalidTransferRequestException|CurrencyRateNotFoundException|Exception
+     * @throws TransferFailedException|InvalidTransferRequestException
+     * @throws Exception
      */
     public function transfer(TransferRequestDto $transferRequest): void
     {
-        $this->validationService->validateTransferRequest($transferRequest);
+        try {
+            $this->validationService->validateTransferRequest($transferRequest);
+        } catch (CurrencyRateNotFoundException $e) {
+            $this->logger->error($e);
+
+            throw new TransferFailedException('Fund transfer failed. Could not validate transfer request.');
+        }
 
         $sender = $transferRequest->getSender();
         $recipient = $transferRequest->getRecipient();
 
         $debitAmount = $this->convertRequestAmountToCurrency($transferRequest, $sender->getCurrency()->toEnum());
-        $creditAmount = $this->convertRequestAmountToCurrency($transferRequest, $recipient->getCurrency()->toEnum());
 
         $lock = $this->lockFactory->createLock($this->getLockKey($sender, $recipient), 5);
         if (!$lock->acquire()) {
             throw new TransferFailedException('Fund transfer failed. Another transfer is in progress.');
         }
 
-        $this->em->getConnection()->beginTransaction();
+        $this->connection->beginTransaction();
 
         try {
             $sender->debit($debitAmount);
-            $this->em->persist($sender);
+            $this->accountRepository->save($sender);
 
-            $recipient->credit($creditAmount);
-            $this->em->persist($recipient);
+            $recipient->credit($transferRequest->getAmount());
+            $this->accountRepository->save($recipient);
 
             $transaction = $this->transactionFactory->create(
                 $sender,
                 $recipient,
-                $debitAmount,
-                $transferRequest->getSender()->getCurrency()->toEnum(),
+                $transferRequest->getAmount(),
+                $transferRequest->getCurrency(),
             );
 
-            $this->em->persist($transaction);
+            $this->transactionRepository->save($transaction);
 
-            $this->em->flush();
-
-            $this->em->getConnection()->commit();
+            $this->connection->commit();
         } catch (Throwable $e) {
-            $this->em->getConnection()->rollBack();
+            $this->connection->rollBack();
 
             throw new TransferFailedException('Fund transfer failed', 500, previous: $e);
         } finally {
@@ -79,18 +89,24 @@ readonly class FundTransferService
     }
 
     /**
-     * @throws CurrencyRateNotFoundException
+     * @throws TransferFailedException
      */
     private function convertRequestAmountToCurrency(
         TransferRequestDto $transferRequest,
         CurrencyEnum $targetCurrency
     ): int {
-        return $this->conversionService->convert(
-            $transferRequest->getAmount(),
-            $transferRequest->getCurrency(),
-            $targetCurrency,
-            CurrencyRateSource::from($this->activeRateSource),
-        );
+        try {
+            return $this->conversionService->convert(
+                $transferRequest->getAmount(),
+                $transferRequest->getCurrency(),
+                $targetCurrency,
+                CurrencyRateSource::from($this->activeRateSource),
+            );
+        } catch (CurrencyRateNotFoundException $e) {
+            $this->logger->error($e);
+
+            throw new TransferFailedException('Fund transfer failed. Failed to convert amount to target currency.');
+        }
     }
 
     private function getLockKey(Account $sender, Account $recipient): string

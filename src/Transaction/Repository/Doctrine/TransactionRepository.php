@@ -30,4 +30,10 @@ final readonly class TransactionRepository implements TransactionRepositoryInter
             ->getQuery()
             ->getResult();
     }
+
+    public function save(Transaction $transaction): void
+    {
+        $this->entityManager->persist($transaction);
+        $this->entityManager->flush();
+    }
 }

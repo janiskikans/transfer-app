@@ -8,12 +8,18 @@ use App\Currency\Enum\CurrencyRateSource;
 use App\Currency\Exception\CurrencyRateNotFoundException;
 use App\Currency\Service\CurrencyConversionService;
 use App\Transaction\Dto\TransferRequestDto;
+use App\Transaction\Exception\InsufficientBalanceException;
+use App\Transaction\Exception\InvalidTransferAccountException;
+use App\Transaction\Exception\InvalidTransferAmountException;
+use App\Transaction\Exception\InvalidTransferCurrencyException;
 use App\Transaction\Exception\InvalidTransferRequestException;
 
 readonly class TransferValidationService
 {
-    public function __construct(private CurrencyConversionService $conversionService, private string $activeRateSource)
-    {
+    public function __construct(
+        private CurrencyConversionService $conversionService,
+        private string $activeRateSource,
+    ) {
     }
 
     /**
@@ -23,19 +29,15 @@ readonly class TransferValidationService
     public function validateTransferRequest(TransferRequestDto $request): void
     {
         if ($request->getAmount() <= 0) {
-            // TODO: Maybe custom exceptions for each
-            throw new InvalidTransferRequestException('Transfer amount must be greater than zero.');
+            throw new InvalidTransferAmountException('Transfer amount must be greater than zero');
         }
 
         if ($request->getSender()->getId() === $request->getRecipient()->getId()) {
-            throw new InvalidTransferRequestException('Sender and recipient cannot be the same.');
+            throw new InvalidTransferAccountException('Sender and recipient cannot be the same');
         }
 
-        $isValidRequestCurrency = $request->getCurrency() === $request->getSender()->getCurrency()->toEnum()
-            || $request->getCurrency() === $request->getRecipient()->getCurrency()->toEnum();
-
-        if (!$isValidRequestCurrency) {
-            throw new InvalidTransferRequestException('Invalid currency.');
+        if ($request->getCurrency() !== $request->getRecipient()->getCurrency()->toEnum()) {
+            throw new InvalidTransferCurrencyException('Invalid currency');
         }
 
         $this->validateSenderBalance($request);
@@ -54,7 +56,7 @@ readonly class TransferValidationService
         );
 
         if ($debitAmount > $request->getSender()->getBalance()) {
-            throw new InvalidTransferRequestException('Sender has insufficient funds.');
+            throw new InsufficientBalanceException();
         }
     }
 }

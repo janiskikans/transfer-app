@@ -8,6 +8,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 readonly class TransferPostRequestDto
 {
+    // TODO: Account context in names
     public function __construct(
         #[Assert\Uuid(message: 'Invalid sender ID')]
         #[Assert\NotBlank(message: 'Sender ID is required')]
