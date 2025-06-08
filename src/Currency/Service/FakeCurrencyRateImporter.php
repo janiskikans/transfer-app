@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Currency\Service;
 
+use App\Currency\Dto\CurrencyRateImportData;
 use App\Currency\Enum\Currency;
 use App\Currency\Enum\CurrencyRateSource;
 use App\Currency\Interface\CurrencyRateImporterInterface;
-use App\Currency\Structure\CurrencyRateImportData;
 
 /**
  * Importer that returns currency rates from a predefined list. For testing purposes only.

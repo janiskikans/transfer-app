@@ -2,9 +2,8 @@
 
 declare(strict_types=1);
 
-namespace App\Currency\Structure;
+namespace App\Currency\Dto;
 
-// TODO: DTO
 class CurrencyRateImportResult
 {
     public function __construct(private int $newCount = 0, private int $updatedCount = 0)

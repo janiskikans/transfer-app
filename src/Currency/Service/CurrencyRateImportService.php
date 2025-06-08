@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Currency\Service;
 
+use App\Currency\Dto\CurrencyRateImportData;
+use App\Currency\Dto\CurrencyRateImportResult;
 use App\Currency\Entity\Currency as CurrencyEntity;
 use App\Currency\Entity\CurrencyRate;
 use App\Currency\Enum\Currency;
@@ -11,8 +13,6 @@ use App\Currency\Enum\CurrencyRateSource;
 use App\Currency\Exception\CurrencyRateImporterException;
 use App\Currency\Interface\CurrencyRateImporterInterface;
 use App\Currency\Repository\CurrencyRateRepositoryInterface;
-use App\Currency\Structure\CurrencyRateImportData;
-use App\Currency\Structure\CurrencyRateImportResult;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Exception\ORMException;
 
@@ -64,13 +64,13 @@ readonly class CurrencyRateImportService
 
         foreach ($fetchedRates as $rateData) {
             $rate = $this->rateRepository->getRate(
-                $rateData->getBaseCurrency(),
-                $rateData->getTargetCurrency(),
+                $rateData->baseCurrency,
+                $rateData->targetCurrency,
                 $this->rateImporter->getSource()
             );
 
             if ($rate) {
-                $rate->setRate($rateData->getRate());
+                $rate->setRate($rateData->rate);
                 $this->rateRepository->save($rate);
                 $result->onUpdatedRate();
 
@@ -81,13 +81,13 @@ readonly class CurrencyRateImportService
                 source: $source,
                 baseCurrency: $this->entityManager->getReference(
                     CurrencyEntity::class,
-                    $rateData->getBaseCurrency()->value,
+                    $rateData->baseCurrency->value,
                 ),
                 targetCurrency: $this->entityManager->getReference(
                     CurrencyEntity::class,
-                    $rateData->getTargetCurrency()->value,
+                    $rateData->targetCurrency->value,
                 ),
-                rate: $rateData->getRate(),
+                rate: $rateData->rate,
             );
 
             $this->rateRepository->save($rate);

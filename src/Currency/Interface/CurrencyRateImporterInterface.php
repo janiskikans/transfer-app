@@ -2,10 +2,10 @@
 
 namespace App\Currency\Interface;
 
+use App\Currency\Dto\CurrencyRateImportData;
 use App\Currency\Enum\Currency;
 use App\Currency\Enum\CurrencyRateSource;
 use App\Currency\Exception\CurrencyRateImporterException;
-use App\Currency\Structure\CurrencyRateImportData;
 
 interface CurrencyRateImporterInterface
 {
