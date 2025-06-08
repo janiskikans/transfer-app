@@ -29,13 +29,13 @@ class TransferController
         try {
             $transferService->transfer($transferRequest);
         } catch (TransferFailedException | InvalidTransferRequestException $e) {
-            return new JsonResponse(['status' => 'failed', 'error' => $e->getMessage()]);
+            return new JsonResponse(['status' => 'failed', 'message' => $e->getMessage()]);
         } catch (Throwable $e) {
             $logger->error($e);
 
-            return new JsonResponse(['status' => 'failed', 'error' => 'Fund transfer failed.']);
+            return new JsonResponse(['status' => 'failed', 'message' => 'Fund transfer failed.']);
         }
 
-        return new JsonResponse(['status' => 'success'], 200);
+        return new JsonResponse(['status' => 'success', 'message' => 'Fund transfer successful'], 200);
     }
 }

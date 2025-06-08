@@ -21,12 +21,12 @@ final readonly class TransferRequestDtoFactory
 
     public function fromTransferPostRequest(TransferPostRequestDto $requestDto): TransferRequestDto
     {
-        $senderAccount = $this->accountRepository->getById($requestDto->senderId);
+        $senderAccount = $this->accountRepository->getById($requestDto->senderAccountId);
         if (!$senderAccount) {
             throw new RuntimeException('Sender account not found');
         }
 
-        $recipientAccount = $this->accountRepository->getById($requestDto->recipientId);
+        $recipientAccount = $this->accountRepository->getById($requestDto->recipientAccountId);
         if (!$recipientAccount) {
             throw new RuntimeException('Recipient account not found');
         }

@@ -81,6 +81,7 @@ readonly class FundTransferService
             $this->connection->commit();
         } catch (Throwable $e) {
             $this->connection->rollBack();
+            $this->logger->error($e);
 
             throw new TransferFailedException('Fund transfer failed', 500, previous: $e);
         } finally {
