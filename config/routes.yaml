@@ -12,3 +12,8 @@ client_v1:
     resource: ../src/Client/Controller/V1/
     type: attribute
     prefix: /api/v1
+
+app.swagger_ui:
+    path: /api/doc
+    methods: GET
+    defaults: { _controller: nelmio_api_doc.controller.swagger_ui }

@@ -5,9 +5,12 @@ declare(strict_types=1);
 namespace App\Transaction\Controller\V1;
 
 use App\Account\Repository\AccountRepositoryInterface;
+use App\Transaction\Dto\TransactionDto;
 use App\Transaction\Entity\Transaction;
 use App\Transaction\Factory\TransactionDtoFactory;
 use App\Transaction\Repository\TransactionRepositoryInterface;
+use Nelmio\ApiDocBundle\Attribute\Model;
+use OpenApi\Attributes as OA;
 use Psr\Log\LoggerInterface;
 use RuntimeException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -15,7 +18,6 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Routing\Requirement\Requirement;
-use Symfony\Component\Serializer\SerializerInterface;
 use Throwable;
 
 class AccountTransactionController extends AbstractController
@@ -26,13 +28,26 @@ class AccountTransactionController extends AbstractController
         requirements: ['accountId' => Requirement::UUID],
         methods: ['GET']
     )]
+    #[OA\Parameter(
+        name: 'accountId',
+        description: 'Account ID',
+        in: 'path',
+        schema: new OA\Schema(type: 'string', format: 'uuid'),
+    )]
+    #[OA\Response(
+        response: 200,
+        description: 'Returns account transactions',
+        content: new OA\JsonContent(
+            type: 'array',
+            items: new OA\Items(ref: new Model(type: TransactionDto::class))
+        )
+    )]
     public function getAccountTransactions(
         string $accountId,
         Request $request,
         AccountRepositoryInterface $accountRepository,
         TransactionRepositoryInterface $transactionRepository,
         TransactionDtoFactory $transactionDtoFactory,
-        SerializerInterface $serializer,
         LoggerInterface $logger,
     ): JsonResponse {
         $account = $accountRepository->getById($accountId);
@@ -40,31 +55,23 @@ class AccountTransactionController extends AbstractController
             throw $this->createNotFoundException('Account not found.');
         }
 
-        $transactions = $transactionRepository->getByAccountId(
-            $accountId,
-            max(0, $request->query->getInt('offset')),
-            min(500, max(1, $request->query->getInt('limit', 20))),
-        );
-
         try {
+            $transactions = $transactionRepository->getByAccountId(
+                $accountId,
+                max(0, $request->query->getInt('offset')),
+                min(500, max(1, $request->query->getInt('limit', 20))),
+            );
+
             $transactionsDto = array_map(
                 fn(Transaction $transaction) => $transactionDtoFactory->createFromEntity($transaction, $account),
                 $transactions
             );
 
-            $json = $serializer->serialize(
-                [
-                    'count' => count($transactionsDto),
-                    'data' => $transactionsDto,
-                ],
-                'json'
-            );
+            return $this->json($transactionsDto);
         } catch (Throwable $e) {
             $logger->error($e);
 
             throw new RuntimeException('Failed to get transactions.');
         }
-
-        return JsonResponse::fromJsonString($json);
     }
 }
