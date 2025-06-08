@@ -6,6 +6,7 @@ use App\Currency\Entity\Currency;
 use Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory;
 
 /**
+ * @codeCoverageIgnore
  * @extends PersistentProxyObjectFactory<Currency>
  */
 final class CurrencyFactory extends PersistentProxyObjectFactory

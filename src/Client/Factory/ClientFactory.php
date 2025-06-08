@@ -7,6 +7,7 @@ use Symfony\Component\Uid\Uuid;
 use Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory;
 
 /**
+ * @codeCoverageIgnore
  * @extends PersistentProxyObjectFactory<Client>
  */
 final class ClientFactory extends PersistentProxyObjectFactory

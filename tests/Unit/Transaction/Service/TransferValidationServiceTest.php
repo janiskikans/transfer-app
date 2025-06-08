@@ -6,10 +6,15 @@ namespace App\Tests\Unit\Transaction\Service;
 
 use App\Account\Entity\Account;
 use App\Currency\Enum\Currency;
+use App\Currency\Enum\CurrencyRateSource;
 use App\Currency\Exception\CurrencyRateNotFoundException;
 use App\Currency\Service\CurrencyConversionService;
 use App\Tests\DummyFactory\Account\AccountFactory;
 use App\Transaction\Dto\TransferRequestDto;
+use App\Transaction\Exception\InsufficientBalanceException;
+use App\Transaction\Exception\InvalidTransferAccountException;
+use App\Transaction\Exception\InvalidTransferAmountException;
+use App\Transaction\Exception\InvalidTransferCurrencyException;
 use App\Transaction\Exception\InvalidTransferRequestException;
 use App\Transaction\Service\TransferValidationService;
 use PHPUnit\Framework\MockObject\Exception;
@@ -28,7 +33,7 @@ class TransferValidationServiceTest extends TestCase
     {
         parent::setUp();
         $this->mockedConversionService = $this->createMock(CurrencyConversionService::class);
-        $this->sut = new TransferValidationService($this->mockedConversionService);
+        $this->sut = new TransferValidationService($this->mockedConversionService, CurrencyRateSource::FAKE->value);
     }
 
     /**
@@ -38,7 +43,7 @@ class TransferValidationServiceTest extends TestCase
     {
         $request = $this->createTransferRequest(AccountFactory::create(), AccountFactory::create(), -100);
 
-        self::expectExceptionObject(new InvalidTransferRequestException('Transfer amount must be greater than zero.'));
+        self::expectExceptionObject(new InvalidTransferAmountException('Transfer amount must be greater than zero'));
 
         $this->sut->validateTransferRequest($request);
     }
@@ -50,7 +55,7 @@ class TransferValidationServiceTest extends TestCase
     {
         $request = $this->createTransferRequest(AccountFactory::create(), AccountFactory::create(), 100, Currency::ANG);
 
-        self::expectExceptionObject(new InvalidTransferRequestException('Invalid currency.'));
+        self::expectExceptionObject(new InvalidTransferCurrencyException('Invalid currency'));
 
         $this->sut->validateTransferRequest($request);
     }
@@ -63,7 +68,7 @@ class TransferValidationServiceTest extends TestCase
         $account = AccountFactory::create();
         $request = $this->createTransferRequest($account, $account, 100);
 
-        self::expectExceptionObject(new InvalidTransferRequestException('Sender and recipient cannot be the same.'));
+        self::expectExceptionObject(new InvalidTransferAccountException('Sender and recipient cannot be the same'));
 
         $this->sut->validateTransferRequest($request);
     }
@@ -84,7 +89,7 @@ class TransferValidationServiceTest extends TestCase
             ->with(100, Currency::USD, Currency::USD)
             ->willReturn(100);
 
-        self::expectExceptionObject(new InvalidTransferRequestException('Sender has insufficient funds.'));
+        self::expectExceptionObject(new InsufficientBalanceException('Insufficient account balance'));
 
         $this->sut->validateTransferRequest($request);
     }

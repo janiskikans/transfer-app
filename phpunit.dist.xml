@@ -29,6 +29,13 @@
         </testsuite>
     </testsuites>
 
+    <coverage>
+        <report>
+            <text outputFile="php://stdout" showUncoveredFiles="true"/>
+            <html outputDirectory="var/coverage"/>
+        </report>
+    </coverage>
+
     <source ignoreSuppressionOfDeprecations="true"
             ignoreIndirectDeprecations="true"
             restrictNotices="true"
@@ -38,6 +45,11 @@
             <directory>src</directory>
         </include>
 
+        <exclude>
+            <directory>src/**/Controller</directory>
+            <directory>src/Shared/DataFixtures/</directory>
+        </exclude>
+
         <deprecationTrigger>
             <method>Doctrine\Deprecations\Deprecation::trigger</method>
             <method>Doctrine\Deprecations\Deprecation::delegateTriggerToBackend</method>
@@ -46,5 +58,6 @@
     </source>
 
     <extensions>
+        <bootstrap class="DAMA\DoctrineTestBundle\PHPUnit\PHPUnitExtension" />
     </extensions>
 </phpunit>
