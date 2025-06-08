@@ -24,6 +24,7 @@ services:
 
     App\Currency\Interface\CurrencyRateImporterInterface: '@App\Currency\Service\FakeCurrencyRateImporter'
     App\Currency\Repository\CurrencyRateRepositoryInterface: '@App\Currency\Repository\CachedCurrencyRateRepository'
+    App\Currency\Repository\CurrencyRepositoryInterface: '@App\Currency\Repository\CachedCurrencyRepository'
 
     App\Currency\Repository\CachedCurrencyRateRepository:
         arguments:
@@ -32,3 +33,7 @@ services:
     App\Currency\Service\CurrencyRateImportService:
         arguments:
             $rateRepository: '@App\Currency\Repository\Doctrine\CurrencyRateRepository'
+
+    App\Currency\Repository\CachedCurrencyRepository:
+        arguments:
+            $innerRepository: '@App\Currency\Repository\Doctrine\CurrencyRepository'
