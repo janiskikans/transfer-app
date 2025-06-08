@@ -7,6 +7,7 @@ namespace App\Currency\Service;
 use App\Currency\Entity\Currency as CurrencyEntity;
 use App\Currency\Entity\CurrencyRate;
 use App\Currency\Enum\Currency;
+use App\Currency\Enum\CurrencyRateSource;
 use App\Currency\Exception\CurrencyRateImporterException;
 use App\Currency\Interface\CurrencyRateImporterInterface;
 use App\Currency\Repository\CurrencyRateRepositoryInterface;
@@ -22,8 +23,7 @@ readonly class CurrencyRateImportService
         Currency::EUR,
         Currency::GBP,
         Currency::JPY,
-        Currency::AUD,
-        Currency::CAD,
+        Currency::ISK,
     ];
 
     public function __construct(
@@ -48,6 +48,7 @@ readonly class CurrencyRateImportService
             }
 
             $this->saveRates($rates, $result);
+            $this->waitForNextImportIfNecessary($this->rateImporter->getSource());
         }
 
         return $result;
@@ -91,6 +92,14 @@ readonly class CurrencyRateImportService
 
             $this->rateRepository->save($rate);
             $result->onNewRate();
+        }
+    }
+
+    private function waitForNextImportIfNecessary(CurrencyRateSource $source): void
+    {
+        // api.exchangerate.host has a crazy rate limit :/
+        if ($source === CurrencyRateSource::EXCHANGE_RATE_HOST) {
+            sleep(1);
         }
     }
 }

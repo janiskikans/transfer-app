@@ -17,13 +17,12 @@ readonly class CurrencyConversionService
 
     /**
      * @throws CurrencyRateNotFoundException
-     * // TODO: Maybe make source configurable?
      */
     public function convert(
         int $amount,
         Currency $baseCurrency,
         Currency $targetCurrency,
-        CurrencyRateSource $source = CurrencyRateSource::FAKE, // TODO: Change
+        CurrencyRateSource $source = CurrencyRateSource::FAKE,
     ): int {
         if ($baseCurrency === $targetCurrency) {
             return $amount;
@@ -35,7 +34,7 @@ readonly class CurrencyConversionService
                 sprintf(
                     'Currency rate not found for base currency: %s, target currency: %s',
                     $baseCurrency->value,
-                    $targetCurrency->value
+                    $targetCurrency->value,
                 )
             );
         }

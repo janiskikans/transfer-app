@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Transaction\Service;
 
+use App\Currency\Enum\CurrencyRateSource;
 use App\Currency\Exception\CurrencyRateNotFoundException;
 use App\Currency\Service\CurrencyConversionService;
 use App\Transaction\Dto\TransferRequestDto;
@@ -11,7 +12,7 @@ use App\Transaction\Exception\InvalidTransferRequestException;
 
 readonly class TransferValidationService
 {
-    public function __construct(private CurrencyConversionService $conversionService)
+    public function __construct(private CurrencyConversionService $conversionService, private string $activeRateSource)
     {
     }
 
@@ -21,8 +22,6 @@ readonly class TransferValidationService
      */
     public function validateTransferRequest(TransferRequestDto $request): void
     {
-        // TODO: Maybe sequence check (steps)?
-
         if ($request->getAmount() <= 0) {
             // TODO: Maybe custom exceptions for each
             throw new InvalidTransferRequestException('Transfer amount must be greater than zero.');
@@ -51,6 +50,7 @@ readonly class TransferValidationService
             $request->getAmount(),
             $request->getCurrency(),
             $request->getSender()->getCurrency()->toEnum(),
+            CurrencyRateSource::from($this->activeRateSource),
         );
 
         if ($debitAmount > $request->getSender()->getBalance()) {

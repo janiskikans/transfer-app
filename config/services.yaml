@@ -4,7 +4,9 @@
 # Put parameters here that don't need to change on each machine where the app is deployed
 # https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
 parameters:
-    exchange_rate_host_access_key: "%env(EXCHANGE_RATE_API_KEY)%"
+    currency_rate.external.exchange_rate_host.access_key: "%env(EXCHANGE_RATE_API_KEY)%"
+#    currency_rate.active_source: "FKE"
+    currency_rate.active_source: "ERH"
 
 services:
     # default configuration for services in *this* file
@@ -12,7 +14,8 @@ services:
         autowire: true      # Automatically injects dependencies in your services.
         autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
         bind:
-            $exchangeRateHostAccessKey: "%exchange_rate_host_access_key%"
+            $exchangeRateHostAccessKey: "%currency_rate.external.exchange_rate_host.access_key%"
+            $activeRateSource: "%currency_rate.active_source%"
 
     # makes classes in src/ available to be used as services
     # this creates a service per class whose id is the fully-qualified class name
@@ -23,6 +26,7 @@ services:
     # please note that last definitions always *replace* previous ones
 
     App\Currency\Interface\CurrencyRateImporterInterface: '@App\Currency\Service\FakeCurrencyRateImporter'
+#    App\Currency\Interface\CurrencyRateImporterInterface: '@App\Currency\Service\ExchangeRateHostCurrencyRateImporter'
     App\Currency\Repository\CurrencyRateRepositoryInterface: '@App\Currency\Repository\CachedCurrencyRateRepository'
     App\Currency\Repository\CurrencyRepositoryInterface: '@App\Currency\Repository\CachedCurrencyRepository'
 

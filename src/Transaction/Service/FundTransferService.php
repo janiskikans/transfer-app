@@ -6,6 +6,7 @@ namespace App\Transaction\Service;
 
 use App\Account\Entity\Account;
 use App\Currency\Enum\Currency as CurrencyEnum;
+use App\Currency\Enum\CurrencyRateSource;
 use App\Currency\Exception\CurrencyRateNotFoundException;
 use App\Currency\Service\CurrencyConversionService;
 use App\Transaction\Dto\TransferRequestDto;
@@ -25,6 +26,7 @@ readonly class FundTransferService
         private EntityManagerInterface $em, // TODO: Repo?,
         private TransactionFactory $transactionFactory,
         private LockFactory $lockFactory,
+        private string $activeRateSource,
     ) {
     }
 
@@ -87,6 +89,7 @@ readonly class FundTransferService
             $transferRequest->getAmount(),
             $transferRequest->getCurrency(),
             $targetCurrency,
+            CurrencyRateSource::from($this->activeRateSource),
         );
     }
 

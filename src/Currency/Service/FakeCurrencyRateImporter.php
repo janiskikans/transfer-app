@@ -26,8 +26,10 @@ class FakeCurrencyRateImporter implements CurrencyRateImporterInterface
     public function importRates(Currency $source, ?array $currencies = null): array
     {
         $data = [
-            ['USD', 'EUR', 0.87685],
-            ['USD', 'GBP', 0.739208],
+            ['USD', 'EUR', 0.88],
+            ['USD', 'GBP', 0.74],
+            ['EUR', 'USD', 1.14],
+            ['GBP', 'USD', 1.35],
         ];
 
         $rates = [];

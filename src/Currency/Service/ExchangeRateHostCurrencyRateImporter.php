@@ -10,6 +10,7 @@ use App\Currency\Exception\CurrencyRateImporterException;
 use App\Currency\Interface\CurrencyRateImporterInterface;
 use App\Currency\Structure\CurrencyRateImportData;
 use DateTimeImmutable;
+use Psr\Log\LoggerInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Throwable;
 
@@ -17,8 +18,11 @@ readonly class ExchangeRateHostCurrencyRateImporter implements CurrencyRateImpor
 {
     private const string BASE_URL = 'https://api.exchangerate.host';
 
-    public function __construct(private HttpClientInterface $client, private string $exchangeRateHostAccessKey)
-    {
+    public function __construct(
+        private HttpClientInterface $client,
+        private string $exchangeRateHostAccessKey,
+        private LoggerInterface $logger
+    ) {
     }
 
     public function getSource(): CurrencyRateSource
@@ -29,6 +33,7 @@ readonly class ExchangeRateHostCurrencyRateImporter implements CurrencyRateImpor
     /**
      * @param Currency[]|null $currencies $currencies
      * @return CurrencyRateImportData[]
+     * @throws CurrencyRateImporterException
      */
     public function importRates(Currency $source, ?array $currencies = null): array
     {
@@ -51,7 +56,9 @@ readonly class ExchangeRateHostCurrencyRateImporter implements CurrencyRateImpor
             $data = $response->toArray();
 
             if (!isset($data['success']) || $data['success'] === false) {
-                throw new CurrencyRateImporterException('Request was not successful.');
+                $apiError = $data['error']['type'] ?? 'Unknown error';
+
+                throw new CurrencyRateImporterException('Request was not successful - ' . $apiError);
             }
 
             if (!isset($data['quotes'])) {
@@ -61,17 +68,22 @@ readonly class ExchangeRateHostCurrencyRateImporter implements CurrencyRateImpor
             $rates = [];
 
             foreach ($data['quotes'] as $key => $rate) {
-                $rates[] = new CurrencyRateImportData(
-                    Currency::from(substr($key, 0, 3)), // TODO: Better enum handling?
-                    Currency::from(substr($key, 3, 3)),
-                    $rate,
-                );
+                $baseCurrency = Currency::tryFrom(substr($key, 0, 3));
+                $targetCurrency = Currency::tryFrom(substr($key, 3, 3));
+
+                if (!$baseCurrency || !$targetCurrency) {
+                    continue;
+                }
+
+                $rates[] = new CurrencyRateImportData($baseCurrency, $targetCurrency, $rate);
             }
 
             return $rates;
         } catch (CurrencyRateImporterException $e) {
             throw $e;
         } catch (Throwable $e) {
+            $this->logger->error($e);
+
             throw new CurrencyRateImporterException('Failed to import currency rates from ExchangeRateHost.', 0, $e);
         }
     }
