@@ -24,7 +24,7 @@ final readonly class CachedCurrencyRateRepository implements CurrencyRateReposit
     {
         return $this->cache->get(
             $this->getCacheKey($baseCurrency, $targetCurrency, $source),
-            function (ItemInterface $item) use ($baseCurrency, $targetCurrency, $source) {
+            function (ItemInterface $item) use ($baseCurrency, $targetCurrency, $source): ?CurrencyRate {
                 $item->expiresAfter(600);
 
                 return $this->innerRepository->getRate($baseCurrency, $targetCurrency, $source);

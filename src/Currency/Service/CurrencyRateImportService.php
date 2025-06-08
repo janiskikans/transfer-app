@@ -7,6 +7,7 @@ namespace App\Currency\Service;
 use App\Currency\Entity\Currency as CurrencyEntity;
 use App\Currency\Entity\CurrencyRate;
 use App\Currency\Enum\Currency;
+use App\Currency\Exception\CurrencyRateImporterException;
 use App\Currency\Interface\CurrencyRateImporterInterface;
 use App\Currency\Repository\CurrencyRateRepositoryInterface;
 use App\Currency\Structure\CurrencyRateImportData;
@@ -34,6 +35,7 @@ readonly class CurrencyRateImportService
 
     /**
      * @throws ORMException
+     * @throws CurrencyRateImporterException
      */
     public function importAndSaveRates(): CurrencyRateImportResult
     {

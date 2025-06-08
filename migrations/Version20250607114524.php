@@ -21,7 +21,7 @@ final class Version20250607114524 extends AbstractMigration
     {
         // this up() migration is auto-generated, please modify it to your needs
         $this->addSql(<<<'SQL'
-            CREATE TABLE transaction (id UUID NOT NULL, sender UUID NOT NULL, recipient UUID NOT NULL, amount INT NOT NULL, created_at TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL, PRIMARY KEY(id))
+            CREATE TABLE transaction (id UUID NOT NULL, sender UUID NOT NULL, recipient UUID NOT NULL, amount INT NOT NULL, currency VARCHAR(3) NOT NULL, created_at TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL, PRIMARY KEY(id))
         SQL);
         $this->addSql(<<<'SQL'
             CREATE INDEX IDX_723705D15F004ACF ON transaction (sender)
@@ -47,6 +47,15 @@ final class Version20250607114524 extends AbstractMigration
         $this->addSql(<<<'SQL'
             ALTER TABLE transaction ADD CONSTRAINT FK_723705D16804FB49 FOREIGN KEY (recipient) REFERENCES account (id) NOT DEFERRABLE INITIALLY IMMEDIATE
         SQL);
+        $this->addSql(<<<'SQL'
+            ALTER TABLE transaction ADD CONSTRAINT FK_723705D16956883F FOREIGN KEY (currency) REFERENCES currency (code) NOT DEFERRABLE INITIALLY IMMEDIATE
+        SQL);
+        $this->addSql(<<<'SQL'
+            CREATE INDEX IDX_723705D16956883F ON transaction (currency)
+        SQL);
+        $this->addSql(<<<'SQL'
+            CREATE INDEX transaction_created_at_idx ON transaction (created_at)
+        SQL);
     }
 
     public function down(Schema $schema): void
@@ -57,6 +66,15 @@ final class Version20250607114524 extends AbstractMigration
         SQL);
         $this->addSql(<<<'SQL'
             ALTER TABLE transaction DROP CONSTRAINT FK_723705D16804FB49
+        SQL);
+        $this->addSql(<<<'SQL'
+            ALTER TABLE transaction DROP CONSTRAINT FK_723705D16956883F
+        SQL);
+        $this->addSql(<<<'SQL'
+            DROP INDEX IDX_723705D16956883F
+        SQL);
+        $this->addSql(<<<'SQL'
+            DROP INDEX transaction_created_at_idx
         SQL);
         $this->addSql(<<<'SQL'
             DROP TABLE transaction

@@ -28,3 +28,7 @@ services:
     App\Currency\Repository\CachedCurrencyRateRepository:
         arguments:
             $innerRepository: '@App\Currency\Repository\Doctrine\CurrencyRateRepository'
+
+    App\Currency\Service\CurrencyRateImportService:
+        arguments:
+            $rateRepository: '@App\Currency\Repository\Doctrine\CurrencyRateRepository'

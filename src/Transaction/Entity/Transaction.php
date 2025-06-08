@@ -46,7 +46,7 @@ class Transaction
         private ?Currency $currency = null,
         #[Column(type: 'datetime_immutable')]
         #[Timestampable(on: 'create')]
-        private readonly ?DateTimeImmutable $createdAt = null,
+        private ?DateTimeImmutable $createdAt = null,
     ) {
     }
 

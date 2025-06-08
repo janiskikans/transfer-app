@@ -23,7 +23,7 @@ readonly class CurrencyConversionService
         int $amount,
         Currency $baseCurrency,
         Currency $targetCurrency,
-        CurrencyRateSource $source = CurrencyRateSource::EXCHANGE_RATE_HOST
+        CurrencyRateSource $source = CurrencyRateSource::FAKE, // TODO: Change
     ): int {
         if ($baseCurrency === $targetCurrency) {
             return $amount;
@@ -31,7 +31,13 @@ readonly class CurrencyConversionService
 
         $conversionRate = $this->currencyRateRepository->getRate($baseCurrency, $targetCurrency, $source);
         if (!$conversionRate) {
-            throw new CurrencyRateNotFoundException();
+            throw new CurrencyRateNotFoundException(
+                sprintf(
+                    'Currency rate not found for base currency: %s, target currency: %s',
+                    $baseCurrency->value,
+                    $targetCurrency->value
+                )
+            );
         }
 
         return (int)($amount * $conversionRate->getRate());

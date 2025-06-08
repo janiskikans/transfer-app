@@ -185,25 +185,33 @@ class AppFixtures extends Fixture
         Currency::ZWL->value => ['Zimbabwean Dollar', 2],
     ];
 
+    private const array ACCOUNT_CURRENCIES = [
+        Currency::USD,
+        Currency::EUR,
+        Currency::GBP,
+        Currency::JPY,
+        Currency::ISK,
+    ];
+
     public function load(ObjectManager $manager): void
     {
         $currencies = [];
 
         foreach (self::CURRENCIES as $code => $data) {
-            $currencies[] = CurrencyFactory::createOne([
+            $currencies[$code] = CurrencyFactory::createOne([
                 'code' => $code,
                 'name' => $data[0],
                 'decimalPlaces' => $data[1],
             ]);
         }
 
-        $clients = ClientFactory::createMany(5);
+        $clients = ClientFactory::createMany(2);
 
         foreach ($clients as $client) {
-            foreach ($currencies as $currency) {
+            foreach (self::ACCOUNT_CURRENCIES as $currency) {
                 $account = AccountFactory::createOne([
                     'client' => $client,
-                    'currency' => $currency,
+                    'currency' => $currencies[$currency->value],
                 ]);
 
                 $client->addAccount($account);

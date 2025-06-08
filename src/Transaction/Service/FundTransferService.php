@@ -10,6 +10,7 @@ use App\Currency\Service\CurrencyConversionService;
 use App\Transaction\Dto\TransferRequestDto;
 use App\Transaction\Exception\InvalidTransferRequestException;
 use App\Transaction\Exception\TransferFailedException;
+use App\Transaction\Factory\TransactionFactory;
 use Doctrine\DBAL\Exception;
 use Doctrine\ORM\EntityManagerInterface;
 use Throwable;
@@ -19,9 +20,9 @@ readonly class FundTransferService
     public function __construct(
         private TransferValidationService $validationService,
         private CurrencyConversionService $conversionService,
-        private EntityManagerInterface $em, // TODO: Repo?
-    )
-    {
+        private EntityManagerInterface $em, // TODO: Repo?,
+        private TransactionFactory $transactionFactory,
+    ) {
     }
 
     /**
@@ -38,7 +39,6 @@ readonly class FundTransferService
         $creditAmount = $this->convertRequestAmountToCurrency($transferRequest, $recipient->getCurrency()->toEnum());
 
         // TODO: Mutex
-        // TODO: Transaction entity
 
         $this->em->getConnection()->beginTransaction();
 
@@ -48,6 +48,15 @@ readonly class FundTransferService
 
             $recipient->credit($creditAmount);
             $this->em->persist($recipient);
+
+            $transaction = $this->transactionFactory->create(
+                $sender,
+                $recipient,
+                $debitAmount,
+                $transferRequest->getSender()->getCurrency()->toEnum(),
+            );
+
+            $this->em->persist($transaction);
 
             $this->em->flush();
 
