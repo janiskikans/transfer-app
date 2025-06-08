@@ -1,0 +1,5 @@
+### Get all accounts (just for demo purposes)
+GET http://{{host}}/api/v1/client/all
+Accept: application/json
+Content-Type: application/json
+###

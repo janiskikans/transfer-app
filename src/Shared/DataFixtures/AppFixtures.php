@@ -186,11 +186,11 @@ class AppFixtures extends Fixture
     ];
 
     private const array ACCOUNT_CURRENCIES = [
-        Currency::USD->value => 10_000,
-        Currency::EUR->value => 10_000,
-        Currency::GBP->value => 10_000,
+        Currency::USD->value => 100_000,
+        Currency::EUR->value => 100_000,
+        Currency::GBP->value => 100_000,
         Currency::JPY->value => 1_500_000,
-        Currency::ISK->value => 1_300_000,
+        Currency::ISK->value => 12_622_000,
     ];
 
     public function load(ObjectManager $manager): void
