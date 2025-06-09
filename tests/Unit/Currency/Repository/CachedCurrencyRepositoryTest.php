@@ -52,7 +52,7 @@ class CachedCurrencyRepositoryTest extends TestCase
             ->willReturn($currency);
 
         $result = $this->sut->getByCode('USD');
-        self::assertEquals('USD', $result->getCode());;
+        self::assertEquals('USD', $result->getCode());
     }
 
     public function testGetByCode_withCachedCurrency_returnsRateFromCache(): void
@@ -68,6 +68,6 @@ class CachedCurrencyRepositoryTest extends TestCase
         $this->mockedRealRepository->expects(self::never())->method('getByCode');
 
         $result = $this->sut->getByCode('USD');
-        self::assertEquals('USD', $result->getCode());;
+        self::assertEquals('USD', $result->getCode());
     }
 }

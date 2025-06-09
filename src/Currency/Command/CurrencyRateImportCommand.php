@@ -44,7 +44,7 @@ class CurrencyRateImportCommand extends Command
                 $result->getNewCount(),
                 $result->getUpdatedCount()
             )
-        );;
+        );
 
         return Command::SUCCESS;
     }

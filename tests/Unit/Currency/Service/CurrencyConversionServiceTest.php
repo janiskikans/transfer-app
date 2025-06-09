@@ -66,7 +66,7 @@ class CurrencyConversionServiceTest extends TestCase
     {
         $currencyJpy = CurrencyFactory::create('JPY');
         $currencyGbp = CurrencyFactory::create('GBP');
-        $rate = CurrencyRateFactory::create(195.89435, baseCurrency: $currencyJpy, targetCurrency: $currencyGbp);;
+        $rate = CurrencyRateFactory::create(195.89435, baseCurrency: $currencyJpy, targetCurrency: $currencyGbp);
 
         $this->mockedRateRepository
             ->expects(self::once())

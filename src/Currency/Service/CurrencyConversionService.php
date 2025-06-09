@@ -50,7 +50,7 @@ readonly class CurrencyConversionService
 
     private function getMinorUnitFactor(Currency $currency): int
     {
-        $currencyEntity = $this->currencyRepository->getByCode($currency->value);;
+        $currencyEntity = $this->currencyRepository->getByCode($currency->value);
 
         return 10 ** $currencyEntity->getDecimalPlaces();
     }
