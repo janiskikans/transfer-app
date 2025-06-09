@@ -55,7 +55,7 @@ readonly class FundTransferService
 
         $debitAmount = $this->convertRequestAmountToCurrency($transferRequest, $sender->getCurrency()->toEnum());
 
-        $lock = $this->lockFactory->createLock($this->getLockKey($sender, $recipient), 5);
+        $lock = $this->lockFactory->createLock($this->getLockKey($sender), 5);
         if (!$lock->acquire()) {
             throw new TransferFailedException('Fund transfer failed. Another transfer is in progress.');
         }
@@ -110,11 +110,8 @@ readonly class FundTransferService
         }
     }
 
-    private function getLockKey(Account $sender, Account $recipient): string
+    private function getLockKey(Account $sender): string
     {
-        $ids = [$sender->getId()->toRfc4122(), $recipient->getId()->toRfc4122()];
-        sort($ids);
-
-        return 'fund_transfer_lock_' . implode('_', $ids);
+        return 'fund_transfer_lock_' . $sender->getId()->toRfc4122();
     }
 }
