@@ -40,7 +40,7 @@ class CurrencyRateImportCommand extends Command
 
         $io->success(
             sprintf(
-                'Imported %d new and %d updated currency rates.',
+                'Import successful. Imported %d new and %d updated currency rates.',
                 $result->getNewCount(),
                 $result->getUpdatedCount()
             )

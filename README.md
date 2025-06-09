@@ -1,5 +1,7 @@
 # Transfer App
 
+## Local setup
+
 ## API
 
 ### API documentation
