@@ -49,11 +49,13 @@ readonly class ExchangeRateHostCurrencyRateImporter implements CurrencyRateImpor
                 $query['currencies'] = implode(',', $currencies);
             }
 
-            $response = $this->client->request('GET', self::BASE_URL . '/historical', [
-                'query' => $query
-            ]);
+//            $response = $this->client->request('GET', self::BASE_URL . '/historical', [
+//                'query' => $query
+//            ]);
+//
+//            $data = $response->toArray();
 
-            $data = $response->toArray();
+            $data = []; // TODO
 
             if (!isset($data['success']) || $data['success'] === false) {
                 $apiError = $data['error']['type'] ?? 'Unknown error';

@@ -2,14 +2,13 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Integration\Client\Doctrine;
+namespace App\Tests\Integration\Client\Repository\Doctrine;
 
 use App\Client\Repository\Doctrine\ClientRepository;
 use App\Tests\DummyFactory\Client\ClientFactory;
 use App\Tests\Integration\HasEntityManager;
 use DateTimeImmutable;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
-
 use Symfony\Component\Uid\Uuid;
 
 use function PHPUnit\Framework\assertNull;

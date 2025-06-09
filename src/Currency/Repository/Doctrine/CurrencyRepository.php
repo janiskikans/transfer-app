@@ -9,7 +9,7 @@ use App\Currency\Repository\CurrencyRepositoryInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
 
-final readonly class CurrencyRepository implements CurrencyRepositoryInterface
+readonly class CurrencyRepository implements CurrencyRepositoryInterface
 {
     /** @var EntityRepository<Currency> */
     private EntityRepository $repository;

@@ -11,7 +11,7 @@ use App\Currency\Repository\CurrencyRateRepositoryInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
 
-final readonly class CurrencyRateRepository implements CurrencyRateRepositoryInterface
+readonly class CurrencyRateRepository implements CurrencyRateRepositoryInterface
 {
     /** @var EntityRepository<CurrencyRate> */
     private EntityRepository $repository;
