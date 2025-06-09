@@ -34,6 +34,18 @@ class AccountTransactionController extends AbstractController
         in: 'path',
         schema: new OA\Schema(type: 'string', format: 'uuid'),
     )]
+    #[OA\Parameter(
+        name: 'offset',
+        description: 'Offset',
+        in: 'query',
+        schema: new OA\Schema(type: 'integer'),
+    )]
+    #[OA\Parameter(
+        name: 'limit',
+        description: 'Limit',
+        in: 'query',
+        schema: new OA\Schema(type: 'integer'),
+    )]
     #[OA\Response(
         response: 200,
         description: 'Returns account transactions',
