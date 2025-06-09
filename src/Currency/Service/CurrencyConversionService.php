@@ -8,11 +8,14 @@ use App\Currency\Enum\Currency;
 use App\Currency\Enum\CurrencyRateSource;
 use App\Currency\Exception\CurrencyRateNotFoundException;
 use App\Currency\Repository\CurrencyRateRepositoryInterface;
+use App\Currency\Repository\CurrencyRepositoryInterface;
 
 readonly class CurrencyConversionService
 {
-    public function __construct(private CurrencyRateRepositoryInterface $currencyRateRepository)
-    {
+    public function __construct(
+        private CurrencyRateRepositoryInterface $currencyRateRepository,
+        private CurrencyRepositoryInterface $currencyRepository,
+    ) {
     }
 
     /**
@@ -39,6 +42,16 @@ readonly class CurrencyConversionService
             );
         }
 
-        return (int)($amount * $conversionRate->getRate());
+        $baseMinorUnitFactor = $this->getMinorUnitFactor($baseCurrency);
+        $targetMinorUnitFactor = $this->getMinorUnitFactor($targetCurrency);
+
+        return (int)($amount * ($targetMinorUnitFactor / $baseMinorUnitFactor) * $conversionRate->getRate());
+    }
+
+    private function getMinorUnitFactor(Currency $currency): int
+    {
+        $currencyEntity = $this->currencyRepository->getByCode($currency->value);;
+
+        return 10 ** $currencyEntity->getDecimalPlaces();
     }
 }

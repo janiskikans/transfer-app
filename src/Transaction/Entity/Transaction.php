@@ -60,19 +60,9 @@ class Transaction
         return $this->sender;
     }
 
-    public function getSenderId(): Uuid
-    {
-        return $this->sender->getId();
-    }
-
     public function getRecipient(): Account
     {
         return $this->recipient;
-    }
-
-    public function getRecipientId(): Uuid
-    {
-        return $this->recipient->getId();
     }
 
     public function getAmount(): int

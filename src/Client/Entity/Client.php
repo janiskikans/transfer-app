@@ -68,12 +68,6 @@ class Client
         return $this->updatedAt;
     }
 
-    /** @return Collection<array-key, Account> */
-    public function getAccounts(): Collection
-    {
-        return $this->accounts;
-    }
-
     public function addAccount(Account $account): void
     {
         if ($this->accounts->contains($account)) {

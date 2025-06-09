@@ -22,8 +22,8 @@ class TransferPostRequestDto
         public $recipientAccountId,
         #[Assert\Positive(message: 'Amount must be positive')]
         #[Assert\NotBlank(message: 'Amount is required')]
-        #[Assert\Type(type: 'float', message: 'Amount must be float')]
-        #[OA\Property(type: 'float', example: 100.00)]
+        #[Assert\Type(type: 'number', message: 'Amount must be number')]
+        #[OA\Property(type: 'number', example: 100.00)]
         public $amount,
         #[Assert\NotBlank(message: 'Currency is required')]
         #[Assert\Currency(message: 'Invalid currency code')]

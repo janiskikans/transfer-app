@@ -25,8 +25,8 @@ services:
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
 
-    App\Currency\Interface\CurrencyRateImporterInterface: '@App\Currency\Service\FakeCurrencyRateImporter'
-#    App\Currency\Interface\CurrencyRateImporterInterface: '@App\Currency\Service\ExchangeRateHostCurrencyRateImporter'
+#    App\Currency\Interface\CurrencyRateImporterInterface: '@App\Currency\Service\FakeCurrencyRateImporter'
+    App\Currency\Interface\CurrencyRateImporterInterface: '@App\Currency\Service\ExchangeRateHostCurrencyRateImporter'
     App\Currency\Repository\CurrencyRateRepositoryInterface: '@App\Currency\Repository\CachedCurrencyRateRepository'
     App\Currency\Repository\CurrencyRepositoryInterface: '@App\Currency\Repository\CachedCurrencyRepository'
 

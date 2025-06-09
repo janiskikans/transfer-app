@@ -62,11 +62,6 @@ class Account
         return $this->client;
     }
 
-    public function getClientId(): Uuid
-    {
-        return $this->client->getId();
-    }
-
     public function getCurrency(): Currency
     {
         return $this->currency;
