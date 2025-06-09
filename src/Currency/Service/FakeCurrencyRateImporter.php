@@ -20,10 +20,10 @@ class FakeCurrencyRateImporter implements CurrencyRateImporterInterface
     }
 
     /**
-     * @param Currency[] $currencies
+     * @param Currency[] $targetCurrencies
      * @return CurrencyRateImportData[]
      */
-    public function importRates(Currency $source, ?array $currencies = null): array
+    public function importRates(Currency $sourceCurrency, ?array $targetCurrencies = null): array
     {
         $data = [
             ['USD', 'EUR', 0.88],

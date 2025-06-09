@@ -31,31 +31,29 @@ readonly class ExchangeRateHostCurrencyRateImporter implements CurrencyRateImpor
     }
 
     /**
-     * @param Currency[]|null $currencies $currencies
+     * @param Currency[]|null $targetCurrencies
      * @return CurrencyRateImportData[]
      * @throws CurrencyRateImporterException
      */
-    public function importRates(Currency $source, ?array $currencies = null): array
+    public function importRates(Currency $sourceCurrency, ?array $targetCurrencies = null): array
     {
         try {
             $query = [
                 'access_key' => $this->exchangeRateHostAccessKey,
-                'source' => $source->value,
+                'source' => $sourceCurrency->value,
                 'date' => new DateTimeImmutable()->format('Y-m-d'),
             ];
 
-            if ($currencies) {
-                $currencies = array_map(fn(Currency $currency) => $currency->value, $currencies);
+            if ($targetCurrencies) {
+                $currencies = array_map(fn(Currency $currency) => $currency->value, $targetCurrencies);
                 $query['currencies'] = implode(',', $currencies);
             }
 
-//            $response = $this->client->request('GET', self::BASE_URL . '/historical', [
-//                'query' => $query
-//            ]);
-//
-//            $data = $response->toArray();
+            $response = $this->client->request('GET', self::BASE_URL . '/historical', [
+                'query' => $query
+            ]);
 
-            $data = []; // TODO
+            $data = $response->toArray();
 
             if (!isset($data['success']) || $data['success'] === false) {
                 $apiError = $data['error']['type'] ?? 'Unknown error';
