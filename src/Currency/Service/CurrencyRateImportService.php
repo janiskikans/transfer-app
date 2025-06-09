@@ -26,6 +26,11 @@ readonly class CurrencyRateImportService
         Currency::ISK,
     ];
 
+    private const array SOURCE_RATE_LIMITER_DELAY = [
+        // api.exchangerate.host has a crazy rate limit :/
+        CurrencyRateSource::EXCHANGE_RATE_HOST->value => 1,
+    ];
+
     public function __construct(
         private CurrencyRateImporterInterface $rateImporter,
         private CurrencyRateRepositoryInterface $rateRepository,
@@ -37,11 +42,11 @@ readonly class CurrencyRateImportService
      * @throws ORMException
      * @throws CurrencyRateImporterException
      */
-    public function importAndSaveRates(): CurrencyRateImportResult
+    public function importAndSaveRates(array $currencies = self::CURRENCIES): CurrencyRateImportResult
     {
         $result = new CurrencyRateImportResult();
 
-        foreach (self::CURRENCIES as $currency) {
+        foreach ($currencies as $currency) {
             $rates = $this->rateImporter->importRates($currency);
             if (!$rates) {
                 continue;
@@ -97,9 +102,11 @@ readonly class CurrencyRateImportService
 
     private function waitForNextImportIfNecessary(CurrencyRateSource $source): void
     {
-        // api.exchangerate.host has a crazy rate limit :/
-        if ($source === CurrencyRateSource::EXCHANGE_RATE_HOST) {
-            sleep(1);
+        $delayInSeconds = self::SOURCE_RATE_LIMITER_DELAY[$source->value] ?? null;
+        if (is_null($delayInSeconds)) {
+            return;
         }
+
+        sleep($delayInSeconds);
     }
 }
