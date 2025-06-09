@@ -4,9 +4,9 @@ Accept: application/json
 Content-Type: application/json
 
 {
-    "senderId": "1f04486a-9648-6de8-b8ab-bf775cf412e4",
-    "recipientId": "1f04486a-9644-691e-96a9-bf775cf412e4",
-    "amount": 1000,
-    "currency": "JPY"
+    "senderAccountId": "1f045716-9eb9-6e2c-8d02-6bab9d363e86",
+    "recipientAccountId": "1f045716-9eb5-6660-a5df-6bab9d363e86",
+    "amount": 120.23,
+    "currency": "USD"
 }
 ###
