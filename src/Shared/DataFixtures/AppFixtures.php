@@ -199,7 +199,7 @@ class AppFixtures extends Fixture
 
         foreach (self::CURRENCIES as $code => $data) {
             $currencies[$code] = CurrencyFactory::createOne([
-                'code' => $code,
+                'code' => CurrencyCode::from($code),
                 'name' => $data[0],
                 'decimalPlaces' => $data[1],
             ]);
