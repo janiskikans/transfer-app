@@ -74,6 +74,8 @@ EXCHANGE_RATE_API_KEY=here-goes-your-api-key
 
 9. You are ready to go! Check the API docs [here](http://localhost/api/doc) and go fire some requests! You can do that from the API documentation page itself or utilizing the `.http` requests under the `./http` directory via _PhpStorm_'s built-in HTTP client.
 
+Note! You can stop the container by running `make down` from outside the containers.
+
 ## API
 
 ### API documentation
