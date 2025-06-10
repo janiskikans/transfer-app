@@ -35,10 +35,4 @@ final readonly class TransactionRepository implements TransactionRepositoryInter
     {
         return $this->repository->findOneBy(['id' => $id]);
     }
-
-    public function save(Transaction $transaction): void
-    {
-        $this->entityManager->persist($transaction);
-        $this->entityManager->flush();
-    }
 }

@@ -24,13 +24,4 @@ final class CurrencyFactory extends PersistentProxyObjectFactory
             'name' => self::faker()->currencyCode(),
         ];
     }
-
-    /**
-     * @see https://symfony.com/bundles/ZenstruckFoundryBundle/current/index.html#initialization
-     */
-    protected function initialize(): static
-    {
-        return $this// ->afterInstantiate(function(Currency $currency): void {})
-            ;
-    }
 }

@@ -31,10 +31,4 @@ final readonly class AccountRepository implements AccountRepositoryInterface
     {
         return $this->repository->findOneBy(['id' => $id]);
     }
-
-    public function save(Account $account): void
-    {
-        $this->entityManager->persist($account);
-        $this->entityManager->flush();
-    }
 }

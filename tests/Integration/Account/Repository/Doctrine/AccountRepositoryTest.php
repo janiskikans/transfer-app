@@ -73,7 +73,8 @@ class AccountRepositoryTest extends KernelTestCase
         $this->entityManager->flush();
 
         $account = AccountFactory::create(client: $client, currency: $currency);
-        $this->sut->save($account);
+        $this->entityManager->persist($account);
+        $this->entityManager->flush();
 
         $result = $this->sut->getById($account->getId()->toString());
         self::assertNotNull($result);

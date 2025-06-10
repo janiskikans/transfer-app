@@ -63,7 +63,7 @@ readonly class CurrencyRateImportService
      * @param CurrencyRateImportData[] $fetchedRates
      * @throws ORMException
      */
-    private function saveRates(array $fetchedRates, CurrencyRateImportResult &$result): void
+    private function saveRates(array $fetchedRates, CurrencyRateImportResult $result): void
     {
         $source = $this->rateImporter->getSource();
 
@@ -76,7 +76,7 @@ readonly class CurrencyRateImportService
 
             if ($rate) {
                 $rate->setRate($rateData->rate);
-                $this->rateRepository->save($rate);
+                $this->entityManager->persist($rate);
                 $result->onUpdatedRate();
 
                 continue;
@@ -95,9 +95,11 @@ readonly class CurrencyRateImportService
                 rate: $rateData->rate,
             );
 
-            $this->rateRepository->save($rate);
+            $this->entityManager->persist($rate);
             $result->onNewRate();
         }
+
+        $this->entityManager->flush();
     }
 
     private function waitForNextImportIfNecessary(CurrencyRateSource $source): void

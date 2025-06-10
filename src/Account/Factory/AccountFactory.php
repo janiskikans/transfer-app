@@ -4,6 +4,7 @@ namespace App\Account\Factory;
 
 use App\Account\Entity\Account;
 use App\Currency\Factory\CurrencyFactory;
+use DateTimeImmutable;
 use Symfony\Component\Uid\Uuid;
 use Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory;
 
@@ -20,7 +21,7 @@ final class AccountFactory extends PersistentProxyObjectFactory
 
     protected function defaults(): array|callable
     {
-        $now = new \DateTimeImmutable();
+        $now = new DateTimeImmutable();
 
         return [
             'id' => Uuid::v6(),
@@ -29,15 +30,5 @@ final class AccountFactory extends PersistentProxyObjectFactory
             'updatedAt' => $now,
             'currency' => CurrencyFactory::new(),
         ];
-    }
-
-    /**
-     * @see https://symfony.com/bundles/ZenstruckFoundryBundle/current/index.html#initialization
-     */
-    protected function initialize(): static
-    {
-        return $this
-            // ->afterInstantiate(function(Account $account): void {})
-        ;
     }
 }

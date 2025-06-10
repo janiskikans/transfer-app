@@ -32,11 +32,6 @@ final readonly class CachedCurrencyRateRepository implements CurrencyRateReposit
         );
     }
 
-    public function save(CurrencyRate $rate): void
-    {
-        $this->innerRepository->save($rate);
-    }
-
     private function getCacheKey(Currency $baseCurrency, Currency $targetCurrency, CurrencyRateSource $source): string
     {
         return sprintf('%s-%s-%s', $baseCurrency->value, $targetCurrency->value, $source->value);

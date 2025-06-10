@@ -124,3 +124,9 @@ php bin/phpunit --testsuite integration
 ```bash
 XDEBUG_MODE=coverage php bin/phpunit
 ```
+
+## Troubleshooting
+
+### App cannot connect to PostgreSQL database
+
+Verify that no other containers/services are running on port `5432`. If there are - stop them and restart Transfer App containers.

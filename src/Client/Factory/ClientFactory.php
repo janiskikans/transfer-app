@@ -3,6 +3,7 @@
 namespace App\Client\Factory;
 
 use App\Client\Entity\Client;
+use DateTimeImmutable;
 use Symfony\Component\Uid\Uuid;
 use Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory;
 
@@ -19,7 +20,7 @@ final class ClientFactory extends PersistentProxyObjectFactory
 
     protected function defaults(): array | callable
     {
-        $now = new \DateTimeImmutable();
+        $now = new DateTimeImmutable();
 
         return [
             'id' => Uuid::v6(),
@@ -27,14 +28,5 @@ final class ClientFactory extends PersistentProxyObjectFactory
             'createdAt' => $now,
             'updatedAt' => $now,
         ];
-    }
-
-    /**
-     * @see https://symfony.com/bundles/ZenstruckFoundryBundle/current/index.html#initialization
-     */
-    protected function initialize(): static
-    {
-        return $this// ->afterInstantiate(function(User $user): void {})
-            ;
     }
 }

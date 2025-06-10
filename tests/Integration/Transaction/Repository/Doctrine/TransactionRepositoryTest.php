@@ -66,33 +66,4 @@ class TransactionRepositoryTest extends KernelTestCase
         self::assertEquals($debitTransaction->getId(), $result[0]->getId());
         self::assertEquals($creditTransaction->getId(), $result[1]->getId());
     }
-
-    public function testSave_withTransaction_transactionIsSaved(): void
-    {
-        $currency = CurrencyFactory::create();
-        $this->entityManager->persist($currency);
-
-        $client = ClientFactory::create();
-        $this->entityManager->persist($client);
-
-        $account = AccountFactory::create(client: $client, currency: $currency);
-        $this->entityManager->persist($account);
-
-        $transaction = TransactionFactory::create(
-            senderAccount: $account,
-            recipientAccount: $account,
-            currency: $currency,
-        );
-
-        $this->sut->save($transaction);
-
-        $savedTransaction = $this->sut->getById($transaction->getId()->toString());
-        self::assertNotNull($savedTransaction);
-        self::assertEquals($transaction->getId(), $savedTransaction->getId());
-        self::assertEquals($transaction->getAmount(), $savedTransaction->getAmount());
-        self::assertEquals($transaction->getCurrency()->toEnum(), $savedTransaction->getCurrency()->toEnum());
-        self::assertEquals($transaction->getSender()->getId(), $savedTransaction->getSender()->getId());
-        self::assertEquals($transaction->getRecipient()->getId(), $savedTransaction->getRecipient()->getId());
-        self::assertInstanceOf(\DateTimeImmutable::class, $savedTransaction->getCreatedAt());
-    }
 }

@@ -86,13 +86,4 @@ class CachedCurrencyRateRepositoryTest extends TestCase
 
         self::assertEquals(1.23, $result->getRate());
     }
-
-    public function testSave_callsRealRepositorySave(): void
-    {
-        $this->mockedRealRepository
-            ->expects(self::once())
-            ->method('save');
-
-        $this->sut->save(CurrencyRateFactory::create());
-    }
 }

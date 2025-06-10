@@ -12,6 +12,4 @@ interface AccountRepositoryInterface
     public function getByClientId(string $clientId): array;
 
     public function getById(string $id): ?Account;
-
-    public function save(Account $account): void;
 }

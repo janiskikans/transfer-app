@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Transaction\Service;
 
 use App\Account\Entity\Account;
-use App\Account\Repository\AccountRepositoryInterface;
 use App\Currency\Enum\Currency as CurrencyEnum;
 use App\Currency\Enum\CurrencyRateSource;
 use App\Currency\Exception\CurrencyRateNotFoundException;
@@ -14,9 +13,9 @@ use App\Transaction\Dto\TransferRequestDto;
 use App\Transaction\Exception\InvalidTransferRequestException;
 use App\Transaction\Exception\TransferFailedException;
 use App\Transaction\Factory\TransactionFactory;
-use App\Transaction\Repository\TransactionRepositoryInterface;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Exception;
+use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Lock\LockFactory;
 use Throwable;
@@ -26,13 +25,12 @@ readonly class FundTransferService
     public function __construct(
         private TransferValidationService $validationService,
         private CurrencyConversionService $conversionService,
-        private AccountRepositoryInterface $accountRepository,
-        private TransactionRepositoryInterface $transactionRepository,
         private TransactionFactory $transactionFactory,
         private LockFactory $lockFactory,
         private Connection $connection,
         private string $activeRateSource,
         private LoggerInterface $logger,
+        private EntityManagerInterface $entityManager,
     ) {
     }
 
@@ -64,10 +62,10 @@ readonly class FundTransferService
 
         try {
             $sender->debit($debitAmount);
-            $this->accountRepository->save($sender);
+            $this->entityManager->persist($sender);
 
             $recipient->credit($transferRequest->getAmount());
-            $this->accountRepository->save($recipient);
+            $this->entityManager->persist($recipient);
 
             $transaction = $this->transactionFactory->create(
                 $sender,
@@ -76,7 +74,8 @@ readonly class FundTransferService
                 $transferRequest->getCurrency(),
             );
 
-            $this->transactionRepository->save($transaction);
+            $this->entityManager->persist($transaction);
+            $this->entityManager->flush();
 
             $this->connection->commit();
         } catch (Throwable $e) {

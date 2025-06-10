@@ -9,6 +9,4 @@ use App\Currency\Enum\CurrencyRateSource;
 interface CurrencyRateRepositoryInterface
 {
     public function getRate(Currency $baseCurrency, Currency $targetCurrency, CurrencyRateSource $source): ?CurrencyRate;
-
-    public function save(CurrencyRate $rate): void;
 }

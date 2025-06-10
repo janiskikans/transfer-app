@@ -31,10 +31,4 @@ readonly class CurrencyRateRepository implements CurrencyRateRepositoryInterface
             ]
         );
     }
-
-    public function save(CurrencyRate $rate): void
-    {
-        $this->entityManager->persist($rate);
-        $this->entityManager->flush();
-    }
 }
