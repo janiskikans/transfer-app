@@ -6,9 +6,9 @@ namespace App\Currency\Service;
 
 use App\Currency\Dto\CurrencyRateImportData;
 use App\Currency\Dto\CurrencyRateImportResult;
-use App\Currency\Entity\Currency as CurrencyEntity;
+use App\Currency\Entity\Currency;
 use App\Currency\Entity\CurrencyRate;
-use App\Currency\Enum\Currency;
+use App\Currency\Enum\CurrencyCode;
 use App\Currency\Enum\CurrencyRateSource;
 use App\Currency\Exception\CurrencyRateImporterException;
 use App\Currency\Interface\CurrencyRateImporterInterface;
@@ -19,11 +19,11 @@ use Doctrine\ORM\Exception\ORMException;
 readonly class CurrencyRateImportService
 {
     private const array CURRENCIES = [
-        Currency::USD,
-        Currency::EUR,
-        Currency::GBP,
-        Currency::JPY,
-        Currency::ISK,
+        CurrencyCode::USD,
+        CurrencyCode::EUR,
+        CurrencyCode::GBP,
+        CurrencyCode::JPY,
+        CurrencyCode::ISK,
     ];
 
     private const array SOURCE_RATE_LIMITER_DELAY = [
@@ -85,11 +85,11 @@ readonly class CurrencyRateImportService
             $rate = new CurrencyRate(
                 source: $source,
                 baseCurrency: $this->entityManager->getReference(
-                    CurrencyEntity::class,
+                    Currency::class,
                     $rateData->baseCurrency->value,
                 ),
                 targetCurrency: $this->entityManager->getReference(
-                    CurrencyEntity::class,
+                    Currency::class,
                     $rateData->targetCurrency->value,
                 ),
                 rate: $rateData->rate,

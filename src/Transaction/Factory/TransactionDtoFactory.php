@@ -22,7 +22,7 @@ class TransactionDtoFactory
             $transaction->getSender()->getId(),
             $transaction->getRecipient()->getId(),
             $transaction->getAmountAsFloat(),
-            $transaction->getCurrency()->getCode(),
+            $transaction->getCurrency()->getCode()->value,
             $transactionType,
             $transaction->getCreatedAt(),
         );

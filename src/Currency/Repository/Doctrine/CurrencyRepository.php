@@ -13,7 +13,7 @@ class CurrencyRepository extends ServiceEntityRepository implements CurrencyRepo
 {
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, Currency::class);;
+        parent::__construct($registry, Currency::class);
     }
 
     public function getByCode(string $code): ?Currency

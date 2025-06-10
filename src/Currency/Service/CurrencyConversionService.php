@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Currency\Service;
 
-use App\Currency\Enum\Currency;
+use App\Currency\Enum\CurrencyCode;
 use App\Currency\Enum\CurrencyRateSource;
 use App\Currency\Exception\CurrencyRateNotFoundException;
 use App\Currency\Repository\CurrencyRateRepositoryInterface;
@@ -23,8 +23,8 @@ readonly class CurrencyConversionService
      */
     public function convert(
         int $amount,
-        Currency $baseCurrency,
-        Currency $targetCurrency,
+        CurrencyCode $baseCurrency,
+        CurrencyCode $targetCurrency,
         CurrencyRateSource $source = CurrencyRateSource::FAKE,
     ): int {
         if ($baseCurrency === $targetCurrency) {
@@ -48,10 +48,10 @@ readonly class CurrencyConversionService
         return (int)($amount * ($targetMinorUnitFactor / $baseMinorUnitFactor) * $conversionRate->getRate());
     }
 
-    private function getMinorUnitFactor(Currency $currency): int
+    private function getMinorUnitFactor(CurrencyCode $currencyCode): int
     {
-        $currencyEntity = $this->currencyRepository->getByCode($currency->value);
+        $currency = $this->currencyRepository->getByCode($currencyCode->value);
 
-        return 10 ** $currencyEntity->getDecimalPlaces();
+        return 10 ** $currency->getDecimalPlaces();
     }
 }

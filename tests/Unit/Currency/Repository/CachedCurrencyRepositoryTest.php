@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Currency\Repository;
 
+use App\Currency\Enum\CurrencyCode;
 use App\Currency\Repository\CachedCurrencyRepository;
 use App\Currency\Repository\Doctrine\CurrencyRepository;
 use App\Tests\DummyFactory\Currency\CurrencyFactory;
@@ -52,7 +53,7 @@ class CachedCurrencyRepositoryTest extends TestCase
             ->willReturn($currency);
 
         $result = $this->sut->getByCode('USD');
-        self::assertEquals('USD', $result->getCode());
+        self::assertEquals(CurrencyCode::USD, $result->getCode());
     }
 
     public function testGetByCode_withCachedCurrency_returnsRateFromCache(): void
@@ -68,6 +69,6 @@ class CachedCurrencyRepositoryTest extends TestCase
         $this->mockedRealRepository->expects(self::never())->method('getByCode');
 
         $result = $this->sut->getByCode('USD');
-        self::assertEquals('USD', $result->getCode());
+        self::assertEquals(CurrencyCode::USD, $result->getCode());
     }
 }

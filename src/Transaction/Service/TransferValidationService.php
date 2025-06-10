@@ -36,7 +36,7 @@ readonly class TransferValidationService
             throw new InvalidTransferAccountException('Sender and recipient cannot be the same');
         }
 
-        if ($request->getCurrency() !== $request->getRecipient()->getCurrency()->toEnum()) {
+        if ($request->getCurrency()->getCode() !== $request->getRecipient()->getCurrency()->getCode()) {
             throw new InvalidTransferCurrencyException('Invalid currency');
         }
 
@@ -50,8 +50,8 @@ readonly class TransferValidationService
     {
         $debitAmount = $this->conversionService->convert(
             $request->getAmount(),
-            $request->getCurrency(),
-            $request->getSender()->getCurrency()->toEnum(),
+            $request->getCurrency()->getCode(),
+            $request->getSender()->getCurrency()->getCode(),
             CurrencyRateSource::from($this->activeRateSource),
         );
 

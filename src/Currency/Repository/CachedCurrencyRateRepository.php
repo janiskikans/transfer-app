@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Currency\Repository;
 
 use App\Currency\Entity\CurrencyRate;
-use App\Currency\Enum\Currency;
+use App\Currency\Enum\CurrencyCode;
 use App\Currency\Enum\CurrencyRateSource;
 use Psr\Cache\InvalidArgumentException;
 use Symfony\Contracts\Cache\CacheInterface;
@@ -20,7 +20,7 @@ final readonly class CachedCurrencyRateRepository implements CurrencyRateReposit
     /**
      * @throws InvalidArgumentException
      */
-    public function getRate(Currency $baseCurrency, Currency $targetCurrency, CurrencyRateSource $source): ?CurrencyRate
+    public function getRate(CurrencyCode $baseCurrency, CurrencyCode $targetCurrency, CurrencyRateSource $source): ?CurrencyRate
     {
         return $this->cache->get(
             $this->getCacheKey($baseCurrency, $targetCurrency, $source),
@@ -32,7 +32,7 @@ final readonly class CachedCurrencyRateRepository implements CurrencyRateReposit
         );
     }
 
-    private function getCacheKey(Currency $baseCurrency, Currency $targetCurrency, CurrencyRateSource $source): string
+    private function getCacheKey(CurrencyCode $baseCurrency, CurrencyCode $targetCurrency, CurrencyRateSource $source): string
     {
         return sprintf('%s-%s-%s', $baseCurrency->value, $targetCurrency->value, $source->value);
     }

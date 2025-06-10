@@ -4,11 +4,10 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Currency\Service;
 
-use App\Currency\Enum\Currency;
+use App\Currency\Enum\CurrencyCode;
 use App\Currency\Enum\CurrencyRateSource;
 use App\Currency\Exception\CurrencyRateImporterException;
 use App\Currency\Service\ExchangeRateHostCurrencyRateImporter;
-use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpClient\MockHttpClient;
@@ -17,7 +16,6 @@ use Symfony\Component\HttpClient\Response\MockResponse;
 class ExchangeRateHostCurrencyRateImporterTest extends TestCase
 {
     private MockHttpClient $mockedApiClient;
-    private MockObject & LoggerInterface $mockedLogger;
     private ExchangeRateHostCurrencyRateImporter $sut;
 
     protected function setUp(): void
@@ -25,12 +23,12 @@ class ExchangeRateHostCurrencyRateImporterTest extends TestCase
         parent::setUp();
 
         $this->mockedApiClient = new MockHttpClient();
-        $this->mockedLogger = $this->createMock(LoggerInterface::class);
+        $mockedLogger = $this->createMock(LoggerInterface::class);
 
         $this->sut = new ExchangeRateHostCurrencyRateImporter(
             $this->mockedApiClient,
             'api-key',
-            $this->mockedLogger,
+            $mockedLogger,
         );
     }
 
@@ -55,7 +53,7 @@ class ExchangeRateHostCurrencyRateImporterTest extends TestCase
 
         self::expectExceptionObject(new CurrencyRateImporterException('Request was not successful - Something went wrong'));
 
-        $this->sut->importRates(Currency::USD, [Currency::EUR]);
+        $this->sut->importRates(CurrencyCode::USD, [CurrencyCode::EUR]);
     }
 
     public function testImportRates_withSuccessfulResponseButNoQuotes_throwsException(): void
@@ -71,7 +69,7 @@ class ExchangeRateHostCurrencyRateImporterTest extends TestCase
 
         self::expectExceptionObject(new CurrencyRateImporterException('Response does not contain rates.'));
 
-        $this->sut->importRates(Currency::USD, [Currency::EUR]);
+        $this->sut->importRates(CurrencyCode::USD, [CurrencyCode::EUR]);
     }
 
     public function testImportRates_withQuotesInResponseBuWithInvalidCurrency_doesNotReturnRates(): void
@@ -92,7 +90,7 @@ class ExchangeRateHostCurrencyRateImporterTest extends TestCase
         $response = new MockResponse($json);
         $this->mockedApiClient->setResponseFactory([$response]);
 
-        $result = $this->sut->importRates(Currency::USD, [Currency::EUR]);
+        $result = $this->sut->importRates(CurrencyCode::USD, [CurrencyCode::EUR]);
         self::assertEmpty($result);
     }
 
@@ -115,17 +113,17 @@ class ExchangeRateHostCurrencyRateImporterTest extends TestCase
         $response = new MockResponse($json);
         $this->mockedApiClient->setResponseFactory([$response]);
 
-        $result = $this->sut->importRates(Currency::USD, [Currency::EUR, Currency::GBP]);
+        $result = $this->sut->importRates(CurrencyCode::USD, [CurrencyCode::EUR, CurrencyCode::GBP]);
         self::assertCount(2, $result);
 
         $rate1 = $result[0];
-        self::assertEquals(Currency::USD, $rate1->baseCurrency);
-        self::assertEquals(Currency::EUR, $rate1->targetCurrency);
+        self::assertEquals(CurrencyCode::USD, $rate1->baseCurrency);
+        self::assertEquals(CurrencyCode::EUR, $rate1->targetCurrency);
         self::assertEquals(3.672982, $rate1->rate);
 
         $rate1 = $result[1];
-        self::assertEquals(Currency::USD, $rate1->baseCurrency);
-        self::assertEquals(Currency::GBP, $rate1->targetCurrency);
+        self::assertEquals(CurrencyCode::USD, $rate1->baseCurrency);
+        self::assertEquals(CurrencyCode::GBP, $rate1->targetCurrency);
         self::assertEquals(0.782888, $rate1->rate);
     }
 }

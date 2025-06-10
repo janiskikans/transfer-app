@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Currency\Enum;
 
-enum Currency: string
+enum CurrencyCode: string
 {
     case AED = 'AED';
     case AFN = 'AFN';

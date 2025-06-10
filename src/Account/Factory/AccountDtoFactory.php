@@ -16,7 +16,7 @@ readonly class AccountDtoFactory
 
         return new AccountDto(
             $account->getId(),
-            $currency->toEnum(),
+            $currency->getCode(),
             MoneyAmountHelper::convertToMajor($account->getBalance(), $currency->getDecimalPlaces()),
             $account->getCreatedAt(),
             $account->getUpdatedAt(),

@@ -8,7 +8,7 @@ use App\Account\Entity\Account;
 use App\Account\Repository\AccountRepositoryInterface;
 use App\Client\Entity\Client;
 use App\Currency\Entity\Currency;
-use App\Currency\Enum\Currency as CurrencyEnum;
+use App\Currency\Enum\CurrencyCode;
 use App\Currency\Repository\CurrencyRepositoryInterface;
 use App\Tests\DummyFactory\Account\AccountFactory;
 use App\Tests\DummyFactory\Client\ClientFactory;
@@ -53,7 +53,7 @@ class TransferRequestDtoFactoryTest extends KernelTestCase
             senderAccountId: Uuid::v6()->toString(),
             recipientAccountId: $recipientAccount->getId()->toString(),
             amount: 10.20,
-            currency: $currency->getCode(),
+            currency: $currency->getCode()->value,
         );
 
         self::expectExceptionObject(new RuntimeException('Sender account not found'));
@@ -76,7 +76,7 @@ class TransferRequestDtoFactoryTest extends KernelTestCase
             senderAccountId: $senderAccount->getId()->toString(),
             recipientAccountId: Uuid::v6()->toString(),
             amount: 10.20,
-            currency: $currency->getCode(),
+            currency: $currency->getCode()->value,
         );
 
         self::expectExceptionObject(new RuntimeException('Recipient account not found'));
@@ -132,7 +132,7 @@ class TransferRequestDtoFactoryTest extends KernelTestCase
         self::assertEquals(1034, $dto->getAmount());
         self::assertEquals($senderAccount->getId(), $dto->getSender()->getId());
         self::assertEquals($recipientAccount->getId(), $dto->getRecipient()->getId());
-        self::assertEquals(CurrencyEnum::USD, $dto->getCurrency());
+        self::assertEquals(CurrencyCode::USD, $dto->getCurrency()->getCode());
     }
 
     private function buildTransferPostRequestDto(

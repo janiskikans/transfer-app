@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Integration\Currency\Service;
 
-use App\Currency\Enum\Currency;
+use App\Currency\Enum\CurrencyCode;
 use App\Currency\Enum\CurrencyRateSource;
 use App\Currency\Repository\Doctrine\CurrencyRateRepository;
 use App\Currency\Service\CurrencyRateImportService;
@@ -40,52 +40,52 @@ class CurrencyRateImportServiceTest extends KernelTestCase
     {
         $this->prepareDb();
 
-        $result = $this->sut->importAndSaveRates([Currency::USD]);
+        $result = $this->sut->importAndSaveRates([CurrencyCode::USD]);
         self::assertEquals(4, $result->getNewCount());
         self::assertEquals(0, $result->getUpdatedCount());
 
         $insertedUsdEurRate = $this->currencyRateRepository->getRate(
-            Currency::USD,
-            Currency::EUR,
+            CurrencyCode::USD,
+            CurrencyCode::EUR,
             CurrencyRateSource::FAKE
         );
         self::assertEquals(0.88, $insertedUsdEurRate->getRate());
-        self::assertEquals(Currency::USD, $insertedUsdEurRate->getBaseCurrency()->toEnum());
-        self::assertEquals(Currency::EUR, $insertedUsdEurRate->getTargetCurrency()->toEnum());
+        self::assertEquals(CurrencyCode::USD, $insertedUsdEurRate->getBaseCurrency()->getCode());
+        self::assertEquals(CurrencyCode::EUR, $insertedUsdEurRate->getTargetCurrency()->getCode());
 
         $insertedUsdGbpRate = $this->currencyRateRepository->getRate(
-            Currency::USD,
-            Currency::GBP,
+            CurrencyCode::USD,
+            CurrencyCode::GBP,
             CurrencyRateSource::FAKE
         );
         self::assertEquals(0.74, $insertedUsdGbpRate->getRate());
-        self::assertEquals(Currency::USD, $insertedUsdGbpRate->getBaseCurrency()->toEnum());
-        self::assertEquals(Currency::GBP, $insertedUsdGbpRate->getTargetCurrency()->toEnum());
+        self::assertEquals(CurrencyCode::USD, $insertedUsdGbpRate->getBaseCurrency()->getCode());
+        self::assertEquals(CurrencyCode::GBP, $insertedUsdGbpRate->getTargetCurrency()->getCode());
 
         $insertedEurUsdRate = $this->currencyRateRepository->getRate(
-            Currency::EUR,
-            Currency::USD,
+            CurrencyCode::EUR,
+            CurrencyCode::USD,
             CurrencyRateSource::FAKE
         );
         self::assertEquals(1.14, $insertedEurUsdRate->getRate());
-        self::assertEquals(Currency::EUR, $insertedEurUsdRate->getBaseCurrency()->toEnum());
-        self::assertEquals(Currency::USD, $insertedEurUsdRate->getTargetCurrency()->toEnum());
+        self::assertEquals(CurrencyCode::EUR, $insertedEurUsdRate->getBaseCurrency()->getCode());
+        self::assertEquals(CurrencyCode::USD, $insertedEurUsdRate->getTargetCurrency()->getCode());
 
         $insertedGbpUsdRate = $this->currencyRateRepository->getRate(
-            Currency::GBP,
-            Currency::USD,
+            CurrencyCode::GBP,
+            CurrencyCode::USD,
             CurrencyRateSource::FAKE
         );
         self::assertEquals(1.35, $insertedGbpUsdRate->getRate());
-        self::assertEquals(Currency::GBP, $insertedGbpUsdRate->getBaseCurrency()->toEnum());
-        self::assertEquals(Currency::USD, $insertedGbpUsdRate->getTargetCurrency()->toEnum());
+        self::assertEquals(CurrencyCode::GBP, $insertedGbpUsdRate->getBaseCurrency()->getCode());
+        self::assertEquals(CurrencyCode::USD, $insertedGbpUsdRate->getTargetCurrency()->getCode());
     }
 
     public function testImportAndSaveRates_withSomeExistingRates_updatesRates(): void
     {
         $this->prepareDb(true);
 
-        $result = $this->sut->importAndSaveRates([Currency::USD]);
+        $result = $this->sut->importAndSaveRates([CurrencyCode::USD]);
 
         self::assertEquals(2, $result->getNewCount());
         self::assertEquals(2, $result->getUpdatedCount());

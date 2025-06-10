@@ -80,7 +80,7 @@ class AccountRepositoryTest extends KernelTestCase
         self::assertNotNull($result);
         self::assertEquals($account->getId(), $result->getId());
         self::assertEquals(10000, $result->getBalance());
-        self::assertEquals($currency->toEnum(), $result->getCurrency()->toEnum());
+        self::assertEquals($currency->getCode(), $result->getCurrency()->getCode());
         self::assertEquals($client->getId(), $result->getClient()->getId());
         self::assertInstanceOf(DateTimeImmutable::class, $result->getCreatedAt());
         self::assertInstanceOf(DateTimeImmutable::class, $result->getUpdatedAt());

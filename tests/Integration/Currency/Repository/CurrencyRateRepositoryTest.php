@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Integration\Currency\Repository;
 
-use App\Currency\Enum\Currency;
+use App\Currency\Enum\CurrencyCode;
 use App\Currency\Enum\CurrencyRateSource;
 use App\Currency\Repository\Doctrine\CurrencyRateRepository;
 use App\Tests\DummyFactory\Currency\CurrencyFactory;
@@ -29,7 +29,7 @@ class CurrencyRateRepositoryTest extends KernelTestCase
 
     public function testGetRate_withNonExistingRate_returnsNull(): void
     {
-        self::assertNull($this->sut->getRate(Currency::USD, Currency::EUR, CurrencyRateSource::FAKE));
+        self::assertNull($this->sut->getRate(CurrencyCode::USD, CurrencyCode::EUR, CurrencyRateSource::FAKE));
     }
 
     public function testGetRate_withExistingRate_returnsRate(): void
@@ -48,12 +48,12 @@ class CurrencyRateRepositoryTest extends KernelTestCase
         $this->entityManager->persist($rate);
         $this->entityManager->flush();
 
-        $result = $this->sut->getRate(Currency::USD, Currency::EUR, CurrencyRateSource::FAKE);
+        $result = $this->sut->getRate(CurrencyCode::USD, CurrencyCode::EUR, CurrencyRateSource::FAKE);
 
         self::assertEquals(1.23, $result->getRate());
         self::assertEquals($rate->getId(), $result->getId());
-        self::assertEquals($rate->getBaseCurrency()->toEnum(), $result->getBaseCurrency()->toEnum());
-        self::assertEquals($rate->getTargetCurrency()->toEnum(), $result->getTargetCurrency()->toEnum());
+        self::assertEquals($rate->getBaseCurrency()->getCode(), $result->getBaseCurrency()->getCode());
+        self::assertEquals($rate->getTargetCurrency()->getCode(), $result->getTargetCurrency()->getCode());
         self::assertEquals($rate->getRate(), $result->getRate());
         self::assertEquals($rate->getSource(), $result->getSource());
         self::assertInstanceOf(DateTimeImmutable::class, $result->getUpdatedAt());

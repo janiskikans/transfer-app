@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Transaction\Service;
 
 use App\Account\Entity\Account;
-use App\Currency\Enum\Currency as CurrencyEnum;
+use App\Currency\Enum\CurrencyCode;
 use App\Currency\Enum\CurrencyRateSource;
 use App\Currency\Exception\CurrencyRateNotFoundException;
 use App\Currency\Service\CurrencyConversionService;
@@ -51,7 +51,7 @@ readonly class FundTransferService
         $sender = $transferRequest->getSender();
         $recipient = $transferRequest->getRecipient();
 
-        $debitAmount = $this->convertRequestAmountToCurrency($transferRequest, $sender->getCurrency()->toEnum());
+        $debitAmount = $this->convertRequestAmountToCurrency($transferRequest, $sender->getCurrency()->getCode());
 
         $lock = $this->lockFactory->createLock($this->getLockKey($sender), 5);
         if (!$lock->acquire()) {
@@ -93,12 +93,12 @@ readonly class FundTransferService
      */
     private function convertRequestAmountToCurrency(
         TransferRequestDto $transferRequest,
-        CurrencyEnum $targetCurrency
+        CurrencyCode $targetCurrency
     ): int {
         try {
             return $this->conversionService->convert(
                 $transferRequest->getAmount(),
-                $transferRequest->getCurrency(),
+                $transferRequest->getCurrency()->getCode(),
                 $targetCurrency,
                 CurrencyRateSource::from($this->activeRateSource),
             );

@@ -6,8 +6,8 @@ namespace App\Tests\Integration\Transaction\Service;
 
 use App\Account\Entity\Account;
 use App\Client\Entity\Client;
-use App\Currency\Entity\Currency as CurrencyEntity;
-use App\Currency\Enum\Currency;
+use App\Currency\Entity\Currency;
+use App\Currency\Enum\CurrencyCode;
 use App\Tests\DummyFactory\Account\AccountFactory;
 use App\Tests\DummyFactory\Client\ClientFactory;
 use App\Tests\DummyFactory\Currency\CurrencyFactory;
@@ -44,7 +44,7 @@ class FundTransferServiceTest extends KernelTestCase
         $client = $this->createClient();
 
         $usdCurrency = $this->createCurrency();
-        $eurCurrency = $this->createCurrency(Currency::EUR);
+        $eurCurrency = $this->createCurrency(CurrencyCode::EUR);
 
         $senderAccount = $this->createAccount($client, $usdCurrency);
         $recipientAccount = $this->createAccount($client, $eurCurrency);
@@ -53,7 +53,7 @@ class FundTransferServiceTest extends KernelTestCase
             senderAccount: $senderAccount,
             recipientAccount: $recipientAccount,
             amount: 1000,
-            currency: Currency::EUR,
+            currency: $eurCurrency,
         );
 
         self::expectExceptionObject(
@@ -76,6 +76,7 @@ class FundTransferServiceTest extends KernelTestCase
             senderAccount: $senderAccount,
             recipientAccount: $recipientAccount,
             amount: 1000,
+            currency: $usdCurrency,
         );
 
         /** @var SharedLockInterface $lock */
@@ -100,7 +101,7 @@ class FundTransferServiceTest extends KernelTestCase
         $client = $this->createClient();
 
         $usdCurrency = $this->createCurrency();
-        $eurCurrency = $this->createCurrency(Currency::EUR);
+        $eurCurrency = $this->createCurrency(CurrencyCode::EUR);
 
         $senderAccount = $this->createAccount($client, $usdCurrency);
         $recipientAccount = $this->createAccount($client, $eurCurrency);
@@ -118,7 +119,7 @@ class FundTransferServiceTest extends KernelTestCase
             senderAccount: $senderAccount,
             recipientAccount: $recipientAccount,
             amount: 1000,
-            currency: Currency::EUR,
+            currency: $eurCurrency,
         );
 
         $this->sut->transfer($request);
@@ -127,7 +128,7 @@ class FundTransferServiceTest extends KernelTestCase
         self::assertEquals(1000, $transaction->getAmount());
         self::assertEquals($senderAccount->getId(), $transaction->getSender()->getId());
         self::assertEquals($recipientAccount->getId(), $transaction->getRecipient()->getId());
-        self::assertEquals($eurCurrency->toEnum(), $transaction->getCurrency()->toEnum());
+        self::assertEquals($eurCurrency->getCode(), $transaction->getCurrency()->getCode());
 
         self::assertEquals(11_000, $recipientAccount->getBalance());
         self::assertEquals(8700, $senderAccount->getBalance());
@@ -137,7 +138,7 @@ class FundTransferServiceTest extends KernelTestCase
         Account $senderAccount,
         Account $recipientAccount,
         int $amount,
-        Currency $currency = Currency::USD,
+        Currency $currency,
     ): TransferRequestDto {
         return new TransferRequestDto(
             $senderAccount,
@@ -147,7 +148,7 @@ class FundTransferServiceTest extends KernelTestCase
         );
     }
 
-    private function createAccount(Client $client, CurrencyEntity $currency, int $balance = 10_000): Account
+    private function createAccount(Client $client, Currency $currency, int $balance = 10_000): Account
     {
         $account = AccountFactory::create(
             balance: $balance,
@@ -161,14 +162,14 @@ class FundTransferServiceTest extends KernelTestCase
         return $account;
     }
 
-    private function createCurrency(Currency $currency = Currency::USD): CurrencyEntity
+    private function createCurrency(CurrencyCode $currencyCode = CurrencyCode::USD): Currency
     {
-        $currencyEntity = CurrencyFactory::create($currency->value);
+        $currency = CurrencyFactory::create($currencyCode->value);
 
-        $this->entityManager->persist($currencyEntity);
+        $this->entityManager->persist($currency);
         $this->entityManager->flush();
 
-        return $currencyEntity;
+        return $currency;
     }
 
     private function createClient(): Client

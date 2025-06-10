@@ -35,7 +35,7 @@ class TransactionDtoFactoryTest extends TestCase
         self::assertEquals($transaction->getSender()->getId(), $dto->sender);
         self::assertEquals($transaction->getRecipient()->getId(), $dto->recipient);
         self::assertEquals(10.00, $dto->amount);
-        self::assertEquals($transaction->getCurrency()->toEnum()->value, $dto->currency);
+        self::assertEquals($transaction->getCurrency()->getCode()->value, $dto->currency);
         self::assertEquals($transaction->getCreatedAt(), $dto->createdAt);
     }
 

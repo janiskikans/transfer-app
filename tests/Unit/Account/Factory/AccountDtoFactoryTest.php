@@ -26,7 +26,7 @@ class AccountDtoFactoryTest extends TestCase
         $dto = $this->sut->createFromEntity($account);
 
         self::assertEquals($account->getId(), $dto->id);
-        self::assertEquals($account->getCurrency()->toEnum(), $dto->currency);
+        self::assertEquals($account->getCurrency()->getCode(), $dto->currency);
         self::assertEquals(100.00, $dto->balance);
         self::assertEquals($account->getCreatedAt(), $dto->createdAt);
         self::assertEquals($account->getUpdatedAt(), $dto->updatedAt);

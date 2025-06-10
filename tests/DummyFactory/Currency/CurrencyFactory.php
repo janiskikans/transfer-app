@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\DummyFactory\Currency;
 
 use App\Currency\Entity\Currency;
+use App\Currency\Enum\CurrencyCode;
 
 class CurrencyFactory
 {
@@ -14,7 +15,7 @@ class CurrencyFactory
         int $decimalPlaces = 2,
     ): Currency {
         return new Currency(
-            code: $code,
+            code: CurrencyCode::from($code),
             name: $name,
             decimalPlaces: $decimalPlaces,
         );

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Integration\Currency\Repository;
 
+use App\Currency\Enum\CurrencyCode;
 use App\Currency\Repository\Doctrine\CurrencyRepository;
 use App\Tests\DummyFactory\Currency\CurrencyFactory;
 use App\Tests\Integration\HasEntityManager;
@@ -35,7 +36,7 @@ class CurrencyRepositoryTest extends KernelTestCase
         $this->entityManager->flush();
 
         $result = $this->sut->getByCode('USD');
-        self::assertEquals('USD', $result->getCode());
+        self::assertEquals(CurrencyCode::USD, $result->getCode());
         self::assertEquals('US Dollar', $result->getName());
         self::assertEquals(2, $result->getDecimalPlaces());
     }

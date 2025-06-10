@@ -4,8 +4,9 @@ declare(strict_types=1);
 
 namespace App\Tests\Integration\Transaction\Factory;
 
-use App\Currency\Enum\Currency;
+use App\Currency\Enum\CurrencyCode;
 use App\Tests\DummyFactory\Account\AccountFactory;
+use App\Tests\DummyFactory\Currency\CurrencyFactory;
 use App\Tests\Integration\HasEntityManager;
 use App\Transaction\Factory\TransactionFactory;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
@@ -21,11 +22,13 @@ class TransactionFactoryTest extends KernelTestCase
         parent::setUp();
 
         $this->setupEntityManager();
-        $this->sut = new TransactionFactory($this->entityManager);
+        $this->sut = new TransactionFactory();
     }
 
     public function testCreate_returnsCorrectTransaction(): void
     {
+        $eurCurrency = CurrencyFactory::create(CurrencyCode::EUR->value);
+
         $sender = AccountFactory::create();
         $recipient = AccountFactory::create();
 
@@ -33,7 +36,7 @@ class TransactionFactoryTest extends KernelTestCase
             sender: $sender,
             recipient: $recipient,
             amount: 1000,
-            currency: Currency::EUR,
+            currency: $eurCurrency,
         );
 
         self::assertEquals(1000, $result->getAmount());

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Currency\Repository\Doctrine;
 
 use App\Currency\Entity\CurrencyRate;
-use App\Currency\Enum\Currency;
+use App\Currency\Enum\CurrencyCode;
 use App\Currency\Enum\CurrencyRateSource;
 use App\Currency\Repository\CurrencyRateRepositoryInterface;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
@@ -18,7 +18,7 @@ class CurrencyRateRepository extends ServiceEntityRepository implements Currency
         parent::__construct($registry, CurrencyRate::class);
     }
 
-    public function getRate(Currency $baseCurrency, Currency $targetCurrency, CurrencyRateSource $source): ?CurrencyRate
+    public function getRate(CurrencyCode $baseCurrency, CurrencyCode $targetCurrency, CurrencyRateSource $source): ?CurrencyRate
     {
         return $this->findOneBy(
             [

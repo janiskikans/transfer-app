@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Currency\Service;
 
 use App\Currency\Dto\CurrencyRateImportData;
-use App\Currency\Enum\Currency;
+use App\Currency\Enum\CurrencyCode;
 use App\Currency\Enum\CurrencyRateSource;
 use App\Currency\Exception\CurrencyRateImporterException;
 use App\Currency\Interface\CurrencyRateImporterInterface;
@@ -31,11 +31,11 @@ readonly class ExchangeRateHostCurrencyRateImporter implements CurrencyRateImpor
     }
 
     /**
-     * @param Currency[]|null $targetCurrencies
+     * @param CurrencyCode[]|null $targetCurrencies
      * @return CurrencyRateImportData[]
      * @throws CurrencyRateImporterException
      */
-    public function importRates(Currency $sourceCurrency, ?array $targetCurrencies = null): array
+    public function importRates(CurrencyCode $sourceCurrency, ?array $targetCurrencies = null): array
     {
         try {
             $query = [
@@ -45,7 +45,7 @@ readonly class ExchangeRateHostCurrencyRateImporter implements CurrencyRateImpor
             ];
 
             if ($targetCurrencies) {
-                $currencies = array_map(fn(Currency $currency) => $currency->value, $targetCurrencies);
+                $currencies = array_map(fn(CurrencyCode $currency) => $currency->value, $targetCurrencies);
                 $query['currencies'] = implode(',', $currencies);
             }
 
@@ -68,8 +68,8 @@ readonly class ExchangeRateHostCurrencyRateImporter implements CurrencyRateImpor
             $rates = [];
 
             foreach ($data['quotes'] as $key => $rate) {
-                $baseCurrency = Currency::tryFrom(substr($key, 0, 3));
-                $targetCurrency = Currency::tryFrom(substr($key, 3, 3));
+                $baseCurrency = CurrencyCode::tryFrom(substr($key, 0, 3));
+                $targetCurrency = CurrencyCode::tryFrom(substr($key, 3, 3));
 
                 if (!$baseCurrency || !$targetCurrency) {
                     continue;

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Transaction\Dto;
 
 use App\Account\Entity\Account;
-use App\Currency\Enum\Currency;
+use App\Currency\Entity\Currency;
 
 final readonly class TransferRequestDto
 {

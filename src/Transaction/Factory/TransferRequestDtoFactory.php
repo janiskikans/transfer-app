@@ -40,7 +40,7 @@ final readonly class TransferRequestDtoFactory
             $senderAccount,
             $recipientAccount,
             MoneyAmountHelper::convertToMinor($requestDto->amount, $currency->getDecimalPlaces()),
-            $currency->toEnum(),
+            $currency,
         );
     }
 }

@@ -3,6 +3,7 @@
 namespace App\Currency\Factory;
 
 use App\Currency\Entity\Currency;
+use App\Currency\Enum\CurrencyCode;
 use Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory;
 
 /**
@@ -19,7 +20,7 @@ final class CurrencyFactory extends PersistentProxyObjectFactory
     protected function defaults(): array | callable
     {
         return [
-            'code' => self::faker()->currencyCode(),
+            'code' => CurrencyCode::tryFrom(self::faker()->currencyCode()) ?? CurrencyCode::USD,
             'decimalPlaces' => 2,
             'name' => self::faker()->currencyCode(),
         ];

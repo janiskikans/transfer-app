@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Currency\Service;
 
-use App\Currency\Enum\Currency;
+use App\Currency\Enum\CurrencyCode;
 use App\Currency\Enum\CurrencyRateSource;
 use App\Currency\Exception\CurrencyRateNotFoundException;
 use App\Currency\Repository\CurrencyRateRepositoryInterface;
@@ -36,7 +36,7 @@ class CurrencyConversionServiceTest extends TestCase
 
         self::assertEquals(
             100,
-            $this->sut->convert(100, Currency::USD, Currency::USD)
+            $this->sut->convert(100, CurrencyCode::USD, CurrencyCode::USD)
         );
     }
 
@@ -47,7 +47,7 @@ class CurrencyConversionServiceTest extends TestCase
         $this->mockedRateRepository
             ->expects(self::once())
             ->method('getRate')
-            ->with(Currency::USD, Currency::EUR, CurrencyRateSource::FAKE)
+            ->with(CurrencyCode::USD, CurrencyCode::EUR, CurrencyRateSource::FAKE)
             ->willReturn($rate);
 
         $this->mockedCurrencyRepository
@@ -57,7 +57,7 @@ class CurrencyConversionServiceTest extends TestCase
                 $currency === 'EUR' => CurrencyFactory::create('EUR', 'Euro'),
             });
 
-        $convertedAmount = $this->sut->convert(1000, Currency::USD, Currency::EUR);
+        $convertedAmount = $this->sut->convert(1000, CurrencyCode::USD, CurrencyCode::EUR);
 
         self::assertEquals(1230, $convertedAmount);
     }
@@ -71,7 +71,7 @@ class CurrencyConversionServiceTest extends TestCase
         $this->mockedRateRepository
             ->expects(self::once())
             ->method('getRate')
-            ->with(Currency::GBP, Currency::JPY, CurrencyRateSource::FAKE)
+            ->with(CurrencyCode::GBP, CurrencyCode::JPY, CurrencyRateSource::FAKE)
             ->willReturn($rate);
 
         $this->mockedCurrencyRepository
@@ -81,7 +81,7 @@ class CurrencyConversionServiceTest extends TestCase
                 $currency === 'JPY' => CurrencyFactory::create('JPY', 'Japanese Yen', 0),
             });
 
-        $convertedAmount = $this->sut->convert(10000, Currency::GBP, Currency::JPY);
+        $convertedAmount = $this->sut->convert(10000, CurrencyCode::GBP, CurrencyCode::JPY);
 
         self::assertEquals(19589, $convertedAmount);
     }
@@ -91,13 +91,13 @@ class CurrencyConversionServiceTest extends TestCase
         $this->mockedRateRepository
             ->expects(self::once())
             ->method('getRate')
-            ->with(Currency::USD, Currency::EUR, CurrencyRateSource::FAKE)
+            ->with(CurrencyCode::USD, CurrencyCode::EUR, CurrencyRateSource::FAKE)
             ->willReturn(null);
 
         self::expectExceptionObject(new CurrencyRateNotFoundException(
             'Currency rate not found for base currency: USD, target currency: EUR'
         ));
 
-        $this->sut->convert(100, Currency::USD, Currency::EUR);
+        $this->sut->convert(100, CurrencyCode::USD, CurrencyCode::EUR);
     }
 }

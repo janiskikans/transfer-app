@@ -13,7 +13,7 @@ class ClientRepository extends ServiceEntityRepository implements ClientReposito
 {
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, Client::class);;
+        parent::__construct($registry, Client::class);
     }
 
     public function getById(string $id): ?Client

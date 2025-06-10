@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Currency\Service;
 
 use App\Currency\Dto\CurrencyRateImportData;
-use App\Currency\Enum\Currency;
+use App\Currency\Enum\CurrencyCode;
 use App\Currency\Enum\CurrencyRateSource;
 use App\Currency\Interface\CurrencyRateImporterInterface;
 
@@ -20,10 +20,10 @@ class FakeCurrencyRateImporter implements CurrencyRateImporterInterface
     }
 
     /**
-     * @param Currency[] $targetCurrencies
+     * @param CurrencyCode[] $targetCurrencies
      * @return CurrencyRateImportData[]
      */
-    public function importRates(Currency $sourceCurrency, ?array $targetCurrencies = null): array
+    public function importRates(CurrencyCode $sourceCurrency, ?array $targetCurrencies = null): array
     {
         $data = [
             ['USD', 'EUR', 0.88],
@@ -36,8 +36,8 @@ class FakeCurrencyRateImporter implements CurrencyRateImporterInterface
 
         foreach ($data as $row) {
             $rates[] = new CurrencyRateImportData(
-                Currency::from($row[0]),
-                Currency::from($row[1]),
+                CurrencyCode::from($row[0]),
+                CurrencyCode::from($row[1]),
                 $row[2],
             );
         }
