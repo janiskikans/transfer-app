@@ -6,21 +6,18 @@ namespace App\Currency\Repository\Doctrine;
 
 use App\Currency\Entity\Currency;
 use App\Currency\Repository\CurrencyRepositoryInterface;
-use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\EntityRepository;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\Persistence\ManagerRegistry;
 
-readonly class CurrencyRepository implements CurrencyRepositoryInterface
+class CurrencyRepository extends ServiceEntityRepository implements CurrencyRepositoryInterface
 {
-    /** @var EntityRepository<Currency> */
-    private EntityRepository $repository;
-
-    public function __construct(private EntityManagerInterface $entityManager)
+    public function __construct(ManagerRegistry $registry)
     {
-        $this->repository = $this->entityManager->getRepository(Currency::class);
+        parent::__construct($registry, Currency::class);;
     }
 
     public function getByCode(string $code): ?Currency
     {
-        return $this->repository->findOneBy(['code' => $code]);
+        return $this->findOneBy(['code' => $code]);
     }
 }

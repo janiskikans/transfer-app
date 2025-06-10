@@ -6,22 +6,19 @@ namespace App\Transaction\Repository\Doctrine;
 
 use App\Transaction\Entity\Transaction;
 use App\Transaction\Repository\TransactionRepositoryInterface;
-use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\EntityRepository;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\Persistence\ManagerRegistry;
 
-final readonly class TransactionRepository implements TransactionRepositoryInterface
+class TransactionRepository extends ServiceEntityRepository implements TransactionRepositoryInterface
 {
-    /** @var EntityRepository<Transaction> */
-    private EntityRepository $repository;
-
-    public function __construct(private EntityManagerInterface $entityManager)
+    public function __construct(ManagerRegistry $registry)
     {
-        $this->repository = $this->entityManager->getRepository(Transaction::class);
+        parent::__construct($registry, Transaction::class);
     }
 
     public function getByAccountId(string $accountId, int $offset = 0, int $limit = 100): array
     {
-        return $this->repository->createQueryBuilder('t')
+        return $this->createQueryBuilder('t')
             ->where('t.sender = :accountId OR t.recipient = :accountId')
             ->setParameter('accountId', $accountId)
             ->setFirstResult($offset)
@@ -33,6 +30,6 @@ final readonly class TransactionRepository implements TransactionRepositoryInter
 
     public function getById(string $id): ?Transaction
     {
-        return $this->repository->findOneBy(['id' => $id]);
+        return $this->findOneBy(['id' => $id]);
     }
 }

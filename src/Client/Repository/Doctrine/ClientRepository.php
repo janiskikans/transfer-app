@@ -6,22 +6,19 @@ namespace App\Client\Repository\Doctrine;
 
 use App\Client\Entity\Client;
 use App\Client\Repository\ClientRepositoryInterface;
-use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\EntityRepository;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\Persistence\ManagerRegistry;
 
-final readonly class ClientRepository implements ClientRepositoryInterface
+class ClientRepository extends ServiceEntityRepository implements ClientRepositoryInterface
 {
-    /** @var EntityRepository<Client> */
-    private EntityRepository $repository;
-
-    public function __construct(private EntityManagerInterface $entityManager)
+    public function __construct(ManagerRegistry $registry)
     {
-        $this->repository = $this->entityManager->getRepository(Client::class);
+        parent::__construct($registry, Client::class);;
     }
 
     public function getById(string $id): ?Client
     {
-        return $this->repository->findOneBy(['id' => $id]);
+        return $this->findOneBy(['id' => $id]);
     }
 
     /**
@@ -29,6 +26,6 @@ final readonly class ClientRepository implements ClientRepositoryInterface
      */
     public function getAll(): array
     {
-        return $this->repository->findAll();
+        return $this->findAll();
     }
 }

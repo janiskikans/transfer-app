@@ -8,22 +8,19 @@ use App\Currency\Entity\CurrencyRate;
 use App\Currency\Enum\Currency;
 use App\Currency\Enum\CurrencyRateSource;
 use App\Currency\Repository\CurrencyRateRepositoryInterface;
-use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\EntityRepository;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\Persistence\ManagerRegistry;
 
-readonly class CurrencyRateRepository implements CurrencyRateRepositoryInterface
+class CurrencyRateRepository extends ServiceEntityRepository implements CurrencyRateRepositoryInterface
 {
-    /** @var EntityRepository<CurrencyRate> */
-    private EntityRepository $repository;
-
-    public function __construct(private EntityManagerInterface $entityManager)
+    public function __construct(ManagerRegistry $registry)
     {
-        $this->repository = $this->entityManager->getRepository(CurrencyRate::class);
+        parent::__construct($registry, CurrencyRate::class);
     }
 
     public function getRate(Currency $baseCurrency, Currency $targetCurrency, CurrencyRateSource $source): ?CurrencyRate
     {
-        return $this->repository->findOneBy(
+        return $this->findOneBy(
             [
                 'baseCurrency' => $baseCurrency->value,
                 'targetCurrency' => $targetCurrency->value,

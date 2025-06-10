@@ -6,17 +6,14 @@ namespace App\Account\Repository\Doctrine;
 
 use App\Account\Entity\Account;
 use App\Account\Repository\AccountRepositoryInterface;
-use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\EntityRepository;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\Persistence\ManagerRegistry;
 
-final readonly class AccountRepository implements AccountRepositoryInterface
+class AccountRepository extends ServiceEntityRepository implements AccountRepositoryInterface
 {
-    /** @var EntityRepository<Account> */
-    private EntityRepository $repository;
-
-    public function __construct(private EntityManagerInterface $entityManager)
+    public function __construct(ManagerRegistry $registry)
     {
-        $this->repository = $this->entityManager->getRepository(Account::class);
+        parent::__construct($registry, Account::class);
     }
 
     /**
@@ -24,11 +21,11 @@ final readonly class AccountRepository implements AccountRepositoryInterface
      */
     public function getByClientId(string $clientId): array
     {
-        return $this->repository->findBy(['client' => $clientId]);
+        return $this->findBy(['client' => $clientId]);
     }
 
     public function getById(string $id): ?Account
     {
-        return $this->repository->findOneBy(['id' => $id]);
+        return $this->findOneBy(['id' => $id]);
     }
 }
