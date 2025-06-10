@@ -50,9 +50,10 @@ OR
 make sh
 ```
 
-6. Run data seeders
+6. Run migrations & run data seeders
 
 ```bash
+./bin/console doctrine:migration:migrate
 ./bin/console doctrine:fixtures:load
 ```
 
